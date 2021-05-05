@@ -9,6 +9,10 @@ export default function Home() {
 
   const cookies = new Cookies();
 
+  const cookieOptions = {
+    secure: true
+  }
+
   const defaultAcc = cookies.get("accounts") ? cookies.get("accounts") : []
   const defaultBal = cookies.get("balance") ? cookies.get("balance") : {}
   const defaultCpu = cookies.get("cpu") ? cookies.get("cpu") : {}
@@ -31,7 +35,7 @@ export default function Home() {
           //console.log(newCpu)
           //console.log("will set")
           setCpu(newCpu)
-          cookies.set("cpu", newCpu)
+          cookies.set("cpu", newCpu, cookieOptions)
       }).catch((err) => {
           //console.log("Cannot get CPU of! "+user)
           const newCpu = {...cpu, [user]: {
@@ -40,7 +44,7 @@ export default function Home() {
               "max": 0
           }}
           setCpu(newCpu)
-          cookies.set("cpu", newCpu)
+          cookies.set("cpu", newCpu, cookieOptions)
       })
   }
 
@@ -56,12 +60,12 @@ export default function Home() {
         //console.log(newBalance)
         //console.log("will set bal")
         setBalance(newBalance)
-        cookies.set("balance", newBalance)
+        cookies.set("balance", newBalance, cookieOptions)
       }).catch((err) => {
         const newBalance = {...balance, [user]: "ERROR TLM" }
         //console.log(newBalance)
         setBalance(newBalance)
-        cookies.set("balance", newBalance)
+        cookies.set("balance", newBalance, cookieOptions)
       })
   }
 
@@ -83,7 +87,7 @@ export default function Home() {
     getBalance(input)
     setAccount(newAcc)
     setInput("")
-    cookies.set("accounts", newAcc)
+    cookies.set("accounts", newAcc, cookieOptions)
   }
 
   const handleDelete = (acc) => {
@@ -98,9 +102,16 @@ export default function Home() {
     setBalance(newBalance)
     //console.log(newCpu)
     //console.log(newBalance)
-    cookies.set("accounts", newAcc)
-    cookies.set("balance", newBalance)
-    cookies.set("cpu", newCpu)
+    cookies.set("accounts", newAcc, cookieOptions)
+    cookies.set("balance", newBalance, cookieOptions)
+    cookies.set("cpu", newCpu, cookieOptions)
+  }
+
+  const handleDeleteCookies = () => {
+    cookies.remove("accounts")
+    cookies.remove("balance")
+    cookies.remove("cpu")
+    cookies.remove("lastUpdate")
   }
 
   useEffect(() => {
@@ -112,8 +123,8 @@ export default function Home() {
           await getBalance(acc)
           await fetchCpuData(acc)
         }
-        cookies.set("balance", balance)
-        cookies.set("cpu", cpu)
+        cookies.set("balance", balance, cookieOptions)
+        cookies.set("cpu", cpu, cookieOptions)
         const updateTime = DateTime.now().setZone("local").setLocale("en-US").toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)
         console.log("Done! "+updateTime)
         setUpdate(updateTime)
@@ -134,10 +145,10 @@ export default function Home() {
         <span className="self-end text-sm">This website is open source on <a className="text-blue-400" href="https://github.com/VectorXz/alienworlds_acc_monitor">GitHub</a></span>
 
         <div className="flex flex-col rounded-md shadow-lg items-center justify-center p-6 my-10 bg-gray-700">
-          <form onSubmit={(e) => { handleAddAcc(e) }}>
-            <div className="flex flex-row items-center justify-center">
+          <form className="w-full" onSubmit={(e) => { handleAddAcc(e) }}>
+            <div className="flex flex-row items-center justify-center w-full">
               <label className="mr-4">WAM Account:</label>
-              <input type="text" className="shadow appearance-none rounded py-2 px-3 bg-gray-300 text-gray-800 font-bold leading-tight focus:outline-none focus:shadow-outline"
+              <input type="text" className="shadow appearance-none w-4/6 rounded py-2 px-3 bg-gray-300 text-gray-800 font-bold leading-tight focus:outline-none focus:shadow-outline"
               onChange={(e) => { setInput(e.target.value) }} value={input} />
             </div>
             <div className="mt-5 w-full">
@@ -147,12 +158,16 @@ export default function Home() {
               </button>
             </div>
           </form>
+          <button className="mt-2 bg-red-500 hover:bg-red-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+          type="button" onClick={handleDeleteCookies}>
+            DELETE ALL DATAS (COOKIES)
+          </button>
         </div>
       </main>
 
       <div className="flex flex-col rounded-md items-center justify-center p-6 my-3 w-full lg:w-5/6 bg-gray-700">
-        <span className="text-lg font-bold text-center my-1">Data will automatically refresh every 30 secs</span>
-        <span className="text-lg font-bold text-center my-1">Click at trash icon / wallet name to delete</span>
+        <span className="text-lg font-bold text-center my-1 text-indigo-300">Data will automatically refresh every 30 secs</span>
+        <span className="text-lg font-bold text-center my-1 text-indigo-300">Click at trash icon / wallet name to delete</span>
         <span className="text-center my-1">Last Update: {update}</span>
         <AccountTable accounts={account} cpu={cpu} balance={balance} onDelete={handleDelete} />
       </div>

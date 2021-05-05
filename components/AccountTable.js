@@ -5,7 +5,7 @@ export default function AccountTable(props) {
 
     return (
         <div className="flex flex-col w-full">
-            {accounts.length === 0 && <span className="text-3xl font-bold text-center">No accounts added yet!</span>}
+            {accounts.length === 0 && <span className="text-3xl font-bold text-center text-red-400">No accounts added yet!</span>}
             {accounts && accounts.map((acc, i) => {
                 const { used, available, max } = cpu[acc] ? cpu[acc] : { used: 0, available: 0, max: 0 }
                 const userBalance = balance[acc] ? balance[acc] : "Loading..."
