@@ -131,8 +131,9 @@ export default function Home() {
 
       <main className="flex flex-col">
         <span className="text-5xl font-bold mb-3 text-center">AW Wax Account Monitor</span>
+        <span className="self-end text-sm">This website is open source on <a className="text-blue-400" href="https://github.com/VectorXz/alienworlds_acc_monitor">GitHub</a></span>
 
-        <div className="flex flex-col rounded-md shadow-lg items-center justify-center p-6 my-3 bg-gray-700">
+        <div className="flex flex-col rounded-md shadow-lg items-center justify-center p-6 my-10 bg-gray-700">
           <form onSubmit={(e) => { handleAddAcc(e) }}>
             <div className="flex flex-row items-center justify-center">
               <label className="mr-4">WAM Account:</label>
