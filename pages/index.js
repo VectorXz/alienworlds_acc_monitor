@@ -112,6 +112,11 @@ export default function Home() {
     cookies.remove("balance")
     cookies.remove("cpu")
     cookies.remove("lastUpdate")
+    setAccount([])
+    setBalance({})
+    setCpu({})
+    setInput("")
+    setUpdate("None")
   }
 
   useEffect(() => {
