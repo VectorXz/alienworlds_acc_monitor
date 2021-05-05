@@ -134,7 +134,7 @@ export default function Home() {
         console.log("Done! "+updateTime)
         setUpdate(updateTime)
         cookies.set("lastUpdate", updateTime)
-      }, 10000);
+      }, 30000);
       return () => clearInterval(interval);
   }, []);
 
