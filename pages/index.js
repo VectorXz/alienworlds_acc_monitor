@@ -12,7 +12,7 @@ export default function Home() {
   const defaultAcc = cookies.get("accounts") ? cookies.get("accounts") : []
   const defaultBal = cookies.get("balance") ? cookies.get("balance") : {}
   const defaultCpu = cookies.get("cpu") ? cookies.get("cpu") : {}
-  const defaultUpdate = cookies.get("lastUpdate") ? cookies.get("lastUpdate") : DateTime.now().setZone("local").setLocale("en-US").toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS)
+  const defaultUpdate = cookies.get("lastUpdate") ? cookies.get("lastUpdate") : "None"
   const [account, setAccount] = useState(defaultAcc)
   const [input, setInput] = useState("")
   const [cpu, setCpu] = useState(defaultCpu)
