@@ -71,6 +71,10 @@ export default function Home() {
 
   const handleAddAcc = (e) => {
     e.preventDefault()
+    if([...account].includes(input.trim())) {
+      alert("Account exists!")
+      return
+    }
     const newCpu = {...cpu, [input]: {
       "used": 0,
       "available": 0,
