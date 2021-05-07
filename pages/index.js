@@ -31,12 +31,17 @@ export default function Home(props) {
 
   const handleAddAcc = (e) => {
     e.preventDefault()
-    if([...account].includes(input.trim())) {
-      alert("Account exists!")
-      return
-    }
+    const account_arr = Array.from(new Set(input.split(" ")))
+    console.log(account_arr)
     let newAcc = [...account]
-    newAcc.push(input.replace(/\s/g, ""))
+    for(let acc of account_arr) {
+      acc = acc.replace(/\s/g, "")
+      console.log(acc)
+      if([...account].includes(acc) || account_arr.reduce((count, cur) => cur===acc ? count+=1 : count) > 1) {
+        alert(`Account: ${acc} exists!`)
+      }
+      newAcc.push(acc)
+    }
     setAccount(newAcc)
     setInput("")
   }
@@ -94,12 +99,13 @@ export default function Home(props) {
 
         <div className="flex flex-col lg:flex-row w-full items-center justify-center rounded-md shadow-lg p-6 mt-10 mb-2 bg-gray-700 gap-x-4 gap-y-5 lg:gap-y-0">
           <div className="flex-1 flex-col">
-            <form className="w-full" onSubmit={(e) => { handleAddAcc(e) }}>
+            <form className="w-full" onSubmit={handleAddAcc}>
               <div className="flex flex-row items-center justify-center w-full">
                 <label className="text-center lg:mr-4">WAM Account:</label>
                 <input type="text" className="shadow appearance-none w-4/6 rounded py-2 px-3 bg-gray-300 text-gray-800 font-bold leading-tight focus:outline-none focus:shadow-outline"
                 onChange={(e) => { setInput(e.target.value) }} value={input} />
               </div>
+              <div className="text-xs font-bold mt-0.5 text-red-300 text-center">Adding multiple accounts at once is supported by using space <br /> Ex. abcde.wam efghj.wam 1a2b3.wam</div>
               <div className="mt-5 w-full">
                 <button className="bg-gray-500 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
                 type="submit">
@@ -122,10 +128,10 @@ export default function Home(props) {
               </div>
             }
             <div className="flex flex-col items-center mt-3">
-              <span className="text-3xl font-bold text-green-400">Total TLM: {total}</span>
-              <span className="text-md font-bold text-blue-400">Market Price: {totalUSD.market_price} USDT</span>
-              <span className="text-xs font-bold text-blue-400">Last update price: {totalUSD.update}</span>
-              <span className="text-3xl font-bold text-green-400">Total USDT: {totalUSD.totalUSD.toFixed(2)}</span>
+              <span className="text-3xl font-bold text-green-400 text-center">Total TLM: {total.toFixed(4)}</span>
+              <span className="text-md font-bold text-blue-400 text-center">Market Price: {totalUSD.market_price} USDT</span>
+              <span className="text-xs font-bold text-blue-400 text-center">Last update price: {totalUSD.update}</span>
+              <span className="text-3xl font-bold text-green-400 text-center">Total USDT: {totalUSD.totalUSD.toFixed(2)}</span>
             </div>
           </div>
         </div>
