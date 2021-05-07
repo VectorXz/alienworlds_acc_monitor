@@ -12,7 +12,8 @@ export default function Home(props) {
   const cookies = new Cookies();
 
   const cookieOptions = {
-    secure: true
+    secure: true,
+    expires: DateTime.now().plus({ months: 6}).toJSDate()
   }
 
   const defaultAcc = props.urlAcc ? props.urlAcc : cookies.get("accounts") ? cookies.get("accounts") : []

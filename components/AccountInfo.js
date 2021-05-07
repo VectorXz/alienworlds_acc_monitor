@@ -184,7 +184,7 @@ export default function AccountInfo(props) {
                     <span className="text-xs">Last update: {update}</span>
                     <span className="text-xs">Next update: {DateTime.fromRFC2822(update).plus({ minutes: 1}).toRFC2822()}</span>
                 </div>
-                <div className="flex flex-row flex-wrap gap-y-2 mt-2 lg:mt-0 lg:gap-y-0.5 lg:flex-col">
+                <div className="flex flex-row lg:flex-col flex-wrap gap-y-2 mt-2 lg:mt-0 lg:gap-y-0.5">
                     <span className="text-sm font-bold self-end">Last mine TLM ({lastMine.last_mine}):</span>
                     <span className="text-xs my-2 self-end">{history.map((hist, i) => {
                         return (
