@@ -3,7 +3,7 @@ import axios from 'axios'
 const { DateTime } = require("luxon");
 
 export default function AccountInfo(props) {
-    const { account, onDelete, onBalChange } = props
+    const { account, onDelete, onBalChange, index } = props
 
     const [acc, setAcc] = useState(account)
     const [loading, setLoading] = useState(true)
@@ -17,6 +17,7 @@ export default function AccountInfo(props) {
         last_mine_tx: "None"
     })
     const [history, setHistory] = useState([])
+    const [minerName, setMinerName] = useState("Loading")
 
     const fetchCpuData = async (user) => {
         return await axios.post('https://chain.wax.io/v1/chain/get_account',
@@ -28,8 +29,9 @@ export default function AccountInfo(props) {
             setAccInfo(newState)
         }).catch((err) => {
             console.log("ERROR get cpu data")
-            console.log(err)
-            alert("Error!, server cannot get data of account: "+acc+"\nThis account does not exists on WAX, or there is a typo error, please check your spelling!")
+            console.log(err.data)
+            alert(
+            `Error!, server cannot get data of account: ${acc}\nThis account does not exists on WAX, or there is a typo error, please check your spelling!`)
             onDelete(acc)
         })
     }
@@ -46,6 +48,19 @@ export default function AccountInfo(props) {
         }).catch((err) => {
             setBalance("ERROR")
         })
+    }
+
+    const getMinerName = async (user) => {
+        const minerName = await axios.post('https://chain.wax.io/v1/chain/get_table_rows',
+        {json: true, code: "federation", scope: "federation", table: 'players', lower_bound: user, upper_bound: user}
+        ).then(function({data}) {
+            //console.log(data.rows[0]);
+            return data.rows[0].tag
+        }).catch((err) => {
+            return "Error"
+        })
+        //console.log(minerName)
+        setMinerName(minerName)
     }
 
     const getLastMineInfo = async (user) => {
@@ -99,14 +114,18 @@ export default function AccountInfo(props) {
     }
 
     useEffect(async () => {
-        console.log("Loading... "+loading)
+        await getMinerName(acc)
+    }, [acc])
+
+    useEffect(async () => {
+        //console.log("Loading... "+loading)
         setUpdate(DateTime.now().setZone("local").toRFC2822())
         if(loading) {
-            console.log("Checking... "+acc)
+            //console.log("Checking... "+acc)
             await fetchCpuData(acc)
             await getLastMineInfo(acc)
         } else {
-            console.log("Not check!")
+            //console.log("Not check!")
         }
     }, [loading])
 
@@ -129,7 +148,7 @@ export default function AccountInfo(props) {
 
     useEffect(() => {
         const interval = setInterval(async () => {
-            console.log("It's time to checking!")
+            //console.log("It's time to checking!")
             setLoading(true)
         }, 60000);
         return () => clearInterval(interval);
@@ -139,7 +158,7 @@ export default function AccountInfo(props) {
         if(isInitialTx.current) {
             isInitialTx.current = false
         } else {
-            console.log("Last mine TX Changed!")
+            //console.log("Last mine TX Changed!")
             await fetchLastMineTx(lastMine.last_mine_tx)
         }
     }, [lastMine.last_mine_tx])
@@ -149,6 +168,7 @@ export default function AccountInfo(props) {
 
     return (
         <div className="flex flex-col my-5">
+            <span className="font-bold">[{index+1}] Miner: {minerName}</span>
             <div className="flex flex-col lg:flex-row gap-y-2 lg:gap-y-0 w-full items-center">
                 <div className="flex mr-3 items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 cursor-pointer" viewBox="0 0 20 20" fill="#FF0000"

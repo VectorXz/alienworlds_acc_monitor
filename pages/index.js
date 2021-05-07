@@ -46,17 +46,10 @@ export default function Home(props) {
     setInput("")
   }
 
-  useEffect(() => {
-    console.log("Account Changed!")
-    console.log(account)
-    cookies.set("accounts", account, cookieOptions)
-    setLink('https://www.alienworlds.fun/?accounts='+btoa(JSON.stringify(account)))
-  }, [account])
-
-  useEffect(async () => {
+  const fetchTLMPrice = async () => {
     const lastPrice = await axios.get('https://api.binance.com/api/v3/avgPrice?symbol=TLMUSDT')
     .then(({data}) => {
-      console.log(data.price)
+      //console.log(data.price)
       return data.price
     })
     .catch((err) => {
@@ -64,12 +57,40 @@ export default function Home(props) {
       console.log(err)
       return 0
     })
-    const newTotalUSD = {
-      market_price: lastPrice,
-      totalUSD: total * lastPrice,
-      update: DateTime.now().setZone("local").toRFC2822()
+    return lastPrice
+  }
+
+  useEffect(() => {
+    //console.log("Account Changed!")
+    //console.log(account)
+    cookies.set("accounts", account, cookieOptions)
+    setLink('https://www.alienworlds.fun/?accounts='+btoa(JSON.stringify(account)))
+  }, [account])
+
+  useEffect(async () => {
+    //console.log("total "+total)
+    let lastPrice = 0
+    const now = DateTime.now().setZone("local")
+    const nextUpdate = totalUSD.update != "None" ? DateTime.fromRFC2822(totalUSD.update).plus({ seconds: 30}) : now
+    // console.log(now.toHTTP())
+    // console.log(nextUpdate.toHTTP())
+    if (nextUpdate <= now) {
+      lastPrice = await fetchTLMPrice()
+      const newTotalUSD = {
+        market_price: lastPrice,
+        totalUSD: total * lastPrice,
+        update: DateTime.now().setZone("local").toRFC2822()
+      }
+      setTotalUSD(newTotalUSD)
+      //console.log("Price updated at "+DateTime.now().setZone("local").toRFC2822())
+    } else {
+      const newTotalUSD = {
+        ...totalUSD,
+        totalUSD: total * totalUSD.market_price
+      }
+      setTotalUSD(newTotalUSD)
+      //console.log("Total updated at "+DateTime.now().setZone("local").toRFC2822())
     }
-    setTotalUSD(newTotalUSD)
   }, [total])
 
   const handleDeleteAcc = (acc) => {
@@ -120,8 +141,8 @@ export default function Home(props) {
           </div>
           <div className="flex-1 flex-col">
             {account.length > 0 && 
-              <div className="flex-1 flex-col text-center">
-                <div><span className="text-xl font-bold mb-1">Save this link to view these accounts later</span></div>
+              <div className="flex-1 flex-col">
+                <div className="text-center mb-1"><span className="text-xl font-bold mb-1">Save this link to view these accounts later</span></div>
                 <div><input type="text" className="shadow appearance-none w-4/6 rounded w-full py-2 px-3 bg-gray-300 text-gray-800 font-bold leading-tight focus:outline-none focus:shadow-outline cursor-pointer"
                 value={link} onClick={(e) => {e.target.select();navigator.clipboard.writeText(link);setCopied(true)}} onFocus={(e) => {e.target.select();}} readOnly /></div>
                 {copied && <div><span className="font-bold text-sm mt-3">Copied to clipboard!</span></div>}
@@ -129,7 +150,7 @@ export default function Home(props) {
             }
             <div className="flex flex-col items-center mt-3">
               <span className="text-3xl font-bold text-green-400 text-center">Total TLM: {total.toFixed(4)}</span>
-              <span className="text-md font-bold text-blue-400 text-center">Market Price: {totalUSD.market_price} USDT</span>
+              <span className="text-md font-bold text-blue-400 text-center">Binance TLM Price(avg. 5min): {totalUSD.market_price} USDT</span>
               <span className="text-xs font-bold text-blue-400 text-center">Last update price: {totalUSD.update}</span>
               <span className="text-3xl font-bold text-green-400 text-center">Total USDT: {totalUSD.totalUSD.toFixed(2)}</span>
             </div>
