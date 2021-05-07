@@ -3,7 +3,7 @@ import axios from 'axios'
 const { DateTime } = require("luxon");
 
 export default function AccountInfo(props) {
-    const { account, onDelete } = props
+    const { account, onDelete, onBalChange } = props
 
     const [acc, setAcc] = useState(account)
     const [loading, setLoading] = useState(true)
@@ -24,16 +24,13 @@ export default function AccountInfo(props) {
             "account_name": user,
         }
         ).then(({data}) => {
-            const newState = {...data.cpu_limit, cpu_weight: data.self_delegated_bandwidth.cpu_weight }
+            const newState = {...data.cpu_limit, cpu_weight: data.self_delegated_bandwidth ? data.self_delegated_bandwidth.cpu_weight : data.total_resources.cpu_weight }
             setAccInfo(newState)
         }).catch((err) => {
-            const newState = {
-                used: 0,
-                available: 0,
-                max: 0,
-                cpu_weight: "0 WAX"
-            }
-            setBalance(newState)
+            console.log("ERROR get cpu data")
+            console.log(err)
+            alert("Error!, server cannot get data of account: "+acc+"\nThis account does not exists on WAX, or there is a typo error, please check your spelling!")
+            onDelete(acc)
         })
     }
   
@@ -55,7 +52,7 @@ export default function AccountInfo(props) {
         const lastMineData = await axios.post('https://wax.pink.gg/v1/chain/get_table_rows',
         {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: user, upper_bound: user}
         ).then(function({data}) {
-            console.log(data.rows[0]);
+            //console.log(data.rows[0]);
             return {
                 last_mine: data.rows[0].last_mine,
                 last_mine_tx: data.rows[0].last_mine_tx
@@ -66,9 +63,9 @@ export default function AccountInfo(props) {
                 last_mine_tx: "None"
             }
         })
-        console.log(lastMineData)
+        //console.log(lastMineData)
         const lastMineString = DateTime.fromISO(lastMineData.last_mine+"Z").setZone("local").toRFC2822()
-        console.log("Last mine: "+lastMineString)
+        //console.log("Last mine: "+lastMineString)
         const newLastMine = {
             last_mine: lastMineString,
             last_mine_tx: lastMineData.last_mine_tx
@@ -79,9 +76,9 @@ export default function AccountInfo(props) {
     const fetchLastMineTx = async (tx) => {
         const lastMineTLM = await axios.get(`https://api.waxsweden.org/v2/history/get_transaction?id=${tx}`
         ).then(function({data}) {
-            console.log("TX RESP")
-            console.log(data)
-            console.log(data.actions[1].act.data.amount)
+            //console.log("TX RESP")
+            //console.log(data)
+            //console.log(data.actions[1].act.data.amount)
             return data.actions[1].act.data.amount
         }).catch((err) => {
             return "ERROR"
@@ -97,7 +94,7 @@ export default function AccountInfo(props) {
             })
             setHistory(newHistory)
         } else {
-            console.log("Duplicate TX")
+            //console.log("Duplicate TX")
         }
     }
 
@@ -117,16 +114,17 @@ export default function AccountInfo(props) {
         if(isInitialMount.current) {
             isInitialMount.current = false
         } else {
-            console.log("CPU Changed!, is now")
-            console.log(accInfo)
+            //console.log("CPU Changed!, is now")
+            //console.log(accInfo)
             await getBalance(acc)
             setLoading(false)
         }
     }, [accInfo])
 
     useEffect(() => {
-        console.log("Balance changed")
-        console.log(balance)
+        //console.log("Balance changed")
+        //console.log(balance)
+        onBalChange(balance)
     }, [balance])
 
     useEffect(() => {
@@ -184,8 +182,8 @@ export default function AccountInfo(props) {
                     <span className="text-xs">Last update: {update}</span>
                     <span className="text-xs">Next update: {DateTime.fromRFC2822(update).plus({ minutes: 1}).toRFC2822()}</span>
                 </div>
-                <div className="flex flex-row lg:flex-col flex-wrap gap-y-2 mt-2 lg:mt-0 lg:gap-y-0.5">
-                    <span className="text-sm font-bold self-end">Last mine TLM ({lastMine.last_mine}):</span>
+                <div className="flex flex-row lg:flex-col flex-wrap lg:flex-nowrap gap-y-2 mt-2 lg:mt-0 lg:gap-y-0.5">
+                    <span className="text-sm font-bold self-end">Last TLM mined ({lastMine.last_mine}):</span>
                     <span className="text-xs my-2 self-end">{history.map((hist, i) => {
                         return (
                             <a key={i} href={`https://wax.bloks.io/transaction/`+hist.tx} rel="noopener noreferrer" target="_blank">

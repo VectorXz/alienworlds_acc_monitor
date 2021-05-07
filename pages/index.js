@@ -22,6 +22,12 @@ export default function Home(props) {
   const genLink = props.urlAcc ? 'https://www.alienworlds.fun/?accounts='+btoa(JSON.stringify(props.urlAcc)) : cookies.get("accounts") ? 'https://www.alienworlds.fun/?accounts='+btoa(JSON.stringify(cookies.get("accounts"))) : "Please add some accounts first!"
   const [link, setLink] = useState(genLink)
   const [copied, setCopied] = useState(false)
+  const [total, setTotal] = useState(0)
+  const [totalUSD, setTotalUSD] = useState({
+    market_price: 0,
+    totalUSD: 0,
+    update: "None"
+  })
 
   const handleAddAcc = (e) => {
     e.preventDefault()
@@ -42,6 +48,25 @@ export default function Home(props) {
     setLink('https://www.alienworlds.fun/?accounts='+btoa(JSON.stringify(account)))
   }, [account])
 
+  useEffect(async () => {
+    const lastPrice = await axios.get('https://api.binance.com/api/v3/avgPrice?symbol=TLMUSDT')
+    .then(({data}) => {
+      console.log(data.price)
+      return data.price
+    })
+    .catch((err) => {
+      console.log("ERROR: cannot get market price")
+      console.log(err)
+      return 0
+    })
+    const newTotalUSD = {
+      market_price: lastPrice,
+      totalUSD: total * lastPrice,
+      update: DateTime.now().setZone("local").toRFC2822()
+    }
+    setTotalUSD(newTotalUSD)
+  }, [total])
+
   const handleDeleteAcc = (acc) => {
     let newAcc = [...account].filter((arr) => arr != acc)
     setAccount(newAcc)
@@ -51,6 +76,7 @@ export default function Home(props) {
     cookies.remove("accounts")
     setAccount([])
     setInput("")
+    setTotal(0)
   }
 
   return (
@@ -60,44 +86,55 @@ export default function Home(props) {
         <meta name="description" content="Alienworlds Wax Account Monitor" />
       </Head>
 
-      <main className="flex flex-col">
-        <span className="text-5xl font-bold mb-3 text-center">AW Wax Account Monitor</span>
-        <span className="self-end text-sm">This website is open source on <a className="text-blue-400" href="https://github.com/VectorXz/alienworlds_acc_monitor">GitHub</a></span>
-
-        <div className="flex flex-col rounded-md shadow-lg items-center justify-center p-6 mt-10 mb-2 bg-gray-700">
-          <form className="w-full" onSubmit={(e) => { handleAddAcc(e) }}>
-            <div className="flex flex-row items-center justify-center w-full">
-              <label className="mr-4">WAM Account:</label>
-              <input type="text" className="shadow appearance-none w-4/6 rounded py-2 px-3 bg-gray-300 text-gray-800 font-bold leading-tight focus:outline-none focus:shadow-outline"
-              onChange={(e) => { setInput(e.target.value) }} value={input} />
-            </div>
-            <div className="mt-5 w-full">
-              <button className="bg-gray-500 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
-              type="submit">
-                ADD
-              </button>
-            </div>
-          </form>
-          <button className="mt-2 bg-red-500 hover:bg-red-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
-          type="button" onClick={handleDeleteCookies}>
-            DELETE ALL DATAS (COOKIES)
-          </button>
+      <main className="flex flex-col w-full lg:w-3/6">
+        <div className="flex flex-col">
+          <span className="text-5xl font-bold mb-3 text-center">AW Wax Account Monitor</span>
+          <span className="text-center text-sm">This website is open source on <a className="text-blue-400" href="https://github.com/VectorXz/alienworlds_acc_monitor">GitHub</a></span>
         </div>
 
-        {account.length > 0 && 
-        <div className="flex flex-col rounded-md shadow-lg items-center justify-center p-3 mb-10 bg-gray-700">
-          <span className="text-xl font-bold mb-1">Save this link to view these accounts later</span>
-          <input type="text" className="shadow appearance-none w-4/6 rounded py-2 px-3 bg-gray-300 text-gray-800 font-bold leading-tight focus:outline-none focus:shadow-outline cursor-pointer"
-          value={link} onClick={(e) => {e.target.select();navigator.clipboard.writeText(link);setCopied(true)}} onFocus={(e) => {e.target.select();}} />
-          {copied && <span className="font-bold text-sm mt-3">Copied to clipboard!</span>}
+        <div className="flex flex-col lg:flex-row w-full items-center justify-center rounded-md shadow-lg p-6 mt-10 mb-2 bg-gray-700 gap-x-4 gap-y-5 lg:gap-y-0">
+          <div className="flex-1 flex-col">
+            <form className="w-full" onSubmit={(e) => { handleAddAcc(e) }}>
+              <div className="flex flex-row items-center justify-center w-full">
+                <label className="text-center lg:mr-4">WAM Account:</label>
+                <input type="text" className="shadow appearance-none w-4/6 rounded py-2 px-3 bg-gray-300 text-gray-800 font-bold leading-tight focus:outline-none focus:shadow-outline"
+                onChange={(e) => { setInput(e.target.value) }} value={input} />
+              </div>
+              <div className="mt-5 w-full">
+                <button className="bg-gray-500 hover:bg-gray-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+                type="submit">
+                  ADD
+                </button>
+              </div>
+            </form>
+            <button className="mt-2 bg-red-500 hover:bg-red-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+            type="button" onClick={handleDeleteCookies}>
+              DELETE ALL DATAS (COOKIES)
+            </button>
+          </div>
+          <div className="flex-1 flex-col">
+            {account.length > 0 && 
+              <div className="flex-1 flex-col text-center">
+                <div><span className="text-xl font-bold mb-1">Save this link to view these accounts later</span></div>
+                <div><input type="text" className="shadow appearance-none w-4/6 rounded w-full py-2 px-3 bg-gray-300 text-gray-800 font-bold leading-tight focus:outline-none focus:shadow-outline cursor-pointer"
+                value={link} onClick={(e) => {e.target.select();navigator.clipboard.writeText(link);setCopied(true)}} onFocus={(e) => {e.target.select();}} readOnly /></div>
+                {copied && <div><span className="font-bold text-sm mt-3">Copied to clipboard!</span></div>}
+              </div>
+            }
+            <div className="flex flex-col items-center mt-3">
+              <span className="text-3xl font-bold text-green-400">Total TLM: {total}</span>
+              <span className="text-md font-bold text-blue-400">Market Price: {totalUSD.market_price} USDT</span>
+              <span className="text-xs font-bold text-blue-400">Last update price: {totalUSD.update}</span>
+              <span className="text-3xl font-bold text-green-400">Total USDT: {totalUSD.totalUSD.toFixed(2)}</span>
+            </div>
+          </div>
         </div>
-        }
       </main>
 
       <div className="flex flex-col rounded-md items-center justify-center p-6 my-3 w-full lg:w-5/6 bg-gray-700">
         <span className="text-lg font-bold text-center my-1 text-indigo-300">Data will automatically refresh every 60 secs</span>
         <span className="text-lg font-bold text-center my-1 text-indigo-300">Click at trash icon to delete account</span>
-        <AccountTable accounts={account} onDelete={handleDeleteAcc} />
+        <AccountTable accounts={account} onDelete={handleDeleteAcc} onTotalChange={(newTotal) => { setTotal(newTotal) }} />
       </div>
     </div>
   )
