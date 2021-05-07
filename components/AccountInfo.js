@@ -49,7 +49,7 @@ export default function AccountInfo(props) {
     }
 
     const getLastMineInfo = async (user) => {
-        const lastMineData = await axios.post('https://wax.pink.gg/v1/chain/get_table_rows',
+        const lastMineData = await axios.post('https://chain.wax.io/v1/chain/get_table_rows',
         {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: user, upper_bound: user}
         ).then(function({data}) {
             //console.log(data.rows[0]);
