@@ -114,6 +114,7 @@ export default function AccountInfo(props) {
             .catch((err2) => {
                 console.log("Fallback Greymass err")
                 console.log(err2)
+                return "ERR"
             })
         })
         const newHistory = [...history]

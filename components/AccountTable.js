@@ -1,5 +1,6 @@
 import AccountInfo from './AccountInfo'
 import { useState, useEffect } from 'react'
+import delay from 'delay'
 
 export default function AccountTable(props) {
     const { accounts, onDelete, onTotalChange } = props
@@ -35,7 +36,8 @@ export default function AccountTable(props) {
     return (
         <div className="flex flex-col w-full">
             {accounts.length === 0 && <span className="text-3xl font-bold text-center text-red-400">No accounts added yet!</span>}
-            {accounts.length > 0 && accounts.map((acc, i) => {
+            {accounts.length > 0 && accounts.map(async (acc, i) => {
+                await delay(500)
                 return (
                     <AccountInfo key={i} index={i} account={acc} onDelete={onDelete} onBalChange={(amt) => onBalChange(i, amt)} />
                 )
