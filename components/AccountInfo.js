@@ -26,7 +26,7 @@ export default function AccountInfo(props) {
 
     const fetchCpuData = async (user) => {
         await delay(getRandom(300,2000))
-        return await axios.post('https://wax.pink.gg/v1/chain/get_account',
+        return await axios.post('https://chain.wax.io/v1/chain/get_account',
         {
             "account_name": user,
         }
@@ -44,7 +44,7 @@ export default function AccountInfo(props) {
   
     const getBalance = async (user) => {
         await delay(getRandom(300,2000))
-        return await axios.post('https://wax.pink.gg/v1/chain/get_currency_balance',
+        return await axios.post('https://chain.wax.io/v1/chain/get_currency_balance',
         {
             "code": "alien.worlds",
             "account": user,
