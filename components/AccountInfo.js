@@ -88,7 +88,7 @@ export default function AccountInfo(props) {
             }
         })
         //console.log(lastMineData)
-        const lastMineString = DateTime.fromISO(lastMineData.last_mine+"Z").setZone("local").toRFC2822()
+        const lastMineString = lastMineData.last_mine != "None" ? DateTime.fromISO(lastMineData.last_mine+"Z").setZone("local").toRFC2822() : "Error"
         //console.log("Last mine: "+lastMineString)
         const newLastMine = {
             last_mine: lastMineString,
@@ -228,7 +228,7 @@ export default function AccountInfo(props) {
                     <span className="text-sm font-bold self-end">Last TLM mined ({lastMine.last_mine}):</span>
                     <span className="text-xs my-2 self-end">{history.map((hist, i) => {
                         return (
-                            <a key={i} href={`https://wax.bloks.io/transaction/`+hist.tx} rel="noopener noreferrer" target="_blank">
+                            <a key={i} href={hist.tx!="None" ? `https://wax.bloks.io/transaction/`+hist.tx : `#`} rel="noopener noreferrer" target="_blank">
                                 <span
                                 className={'inline-flex items-center justify-center px-2 py-1 mr-2 text-xs font-bold leading-none text-black rounded-full bg-green-'+(600-((history.length-i)*100))}>
                                 {hist.amount}
