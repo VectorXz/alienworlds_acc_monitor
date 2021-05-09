@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import axios from 'axios'
 const { DateTime } = require("luxon");
+import delay from 'delay'
 
 export default function AccountInfo(props) {
     const { account, onDelete, onBalChange, index } = props
@@ -19,8 +20,13 @@ export default function AccountInfo(props) {
     const [history, setHistory] = useState([])
     const [minerName, setMinerName] = useState("Loading")
 
+    function getRandom(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
     const fetchCpuData = async (user) => {
-        return await axios.post('https://chain.wax.io/v1/chain/get_account',
+        await delay(getRandom(300,2000))
+        return await axios.post('https://wax.pink.gg/v1/chain/get_account',
         {
             "account_name": user,
         }
@@ -37,7 +43,8 @@ export default function AccountInfo(props) {
     }
   
     const getBalance = async (user) => {
-        return await axios.post('https://chain.wax.io/v1/chain/get_currency_balance',
+        await delay(getRandom(300,2000))
+        return await axios.post('https://wax.pink.gg/v1/chain/get_currency_balance',
         {
             "code": "alien.worlds",
             "account": user,
@@ -51,7 +58,8 @@ export default function AccountInfo(props) {
     }
 
     const getMinerName = async (user) => {
-        const minerName = await axios.post('https://chain.wax.io/v1/chain/get_table_rows',
+        await delay(getRandom(300,2000))
+        const minerName = await axios.post('https://wax.pink.gg/v1/chain/get_table_rows',
         {json: true, code: "federation", scope: "federation", table: 'players', lower_bound: user, upper_bound: user}
         ).then(function({data}) {
             //console.log(data.rows[0]);
@@ -64,7 +72,8 @@ export default function AccountInfo(props) {
     }
 
     const getLastMineInfo = async (user) => {
-        const lastMineData = await axios.post('https://chain.wax.io/v1/chain/get_table_rows',
+        await delay(getRandom(300,2000))
+        const lastMineData = await axios.post('https://wax.pink.gg/v1/chain/get_table_rows',
         {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: user, upper_bound: user}
         ).then(function({data}) {
             //console.log(data.rows[0]);
@@ -89,14 +98,23 @@ export default function AccountInfo(props) {
     }
 
     const fetchLastMineTx = async (tx) => {
-        const lastMineTLM = await axios.get(`https://api.waxsweden.org/v2/history/get_transaction?id=${tx}`
+        await delay(getRandom(300,2000))
+        const lastMineTLM = await axios.get(`https://wax.eosrio.io/v2/history/get_transaction?id=${tx}`
         ).then(function({data}) {
             //console.log("TX RESP")
             //console.log(data)
             //console.log(data.actions[1].act.data.amount)
             return data.actions[1].act.data.amount
-        }).catch((err) => {
-            return "ERROR"
+        }).catch(async (err) => {
+            console.log("EOSRIO ERR")
+            console.log(err)
+            await delay(getRandom(300,2000))
+            return await axios.get(`https://wax.greymass.com/v1/history/get_transaction?id=${tx}`)
+            .then(({data}) => data.traces[1].act.data.quantity.slice(0, -4))
+            .catch((err2) => {
+                console.log("Fallback Greymass err")
+                console.log(err2)
+            })
         })
         const newHistory = [...history]
         if(newHistory.length == 5) {
@@ -123,6 +141,7 @@ export default function AccountInfo(props) {
         if(loading) {
             //console.log("Checking... "+acc)
             await fetchCpuData(acc)
+            await delay(getRandom(300,2000))
             await getLastMineInfo(acc)
         } else {
             //console.log("Not check!")
