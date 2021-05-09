@@ -133,11 +133,13 @@ export default function AccountInfo(props) {
     }
 
     useEffect(async () => {
+        await delay(getRandom(300,5000))
         await getMinerName(acc)
     }, [acc])
 
     useEffect(async () => {
         //console.log("Loading... "+loading)
+        await delay(getRandom(300,5000))
         setUpdate(DateTime.now().setZone("local").toRFC2822())
         if(loading) {
             //console.log("Checking... "+acc)
