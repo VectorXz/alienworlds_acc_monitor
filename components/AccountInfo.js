@@ -115,6 +115,7 @@ export default function AccountInfo(props) {
 
     const fetchLastMineTx = async (tx) => {
         await delay(getRandom(300,2000))
+        if(tx == "None") { return }
         const lastMineTLM = await axios.get(`https://wax.eosrio.io/v2/history/get_transaction?id=${tx}`
         ).then(function({data}) {
             //console.log("TX RESP")
