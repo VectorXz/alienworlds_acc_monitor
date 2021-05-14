@@ -39,7 +39,6 @@ export default function AccountInfo(props) {
             console.log(err.data)
             alert(
             `Error!, server cannot get data of account: ${acc}\nThis account does not exists on WAX, or there is a typo error, please check your spelling!`)
-            onDelete(acc)
         })
     }
   
