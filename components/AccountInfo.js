@@ -51,7 +51,12 @@ export default function AccountInfo(props) {
         .then(({data}) => {
             setWax(data[0].slice(0,-4))
         }).catch((err) => {
-            setWax("ERROR")
+            console.log(err.response)
+            if(err.response.status == 500 && err.response.data.message.includes('empty')) {
+                setWax("0.00000000")
+            } else {
+                setWax("ERROR")
+            }
         })
     }
 
