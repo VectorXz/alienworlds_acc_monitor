@@ -6,7 +6,7 @@ export default async (req, res) => {
     const {
         query: { name },
     } = req
-    console.log(name)
+    //console.log(name)
     if(!name || typeof name == "undefined" || name == '') return res.status(400)
     function getRandom(min, max) {
         return Math.random() * (max - min) + min;

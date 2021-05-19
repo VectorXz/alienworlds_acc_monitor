@@ -6,7 +6,7 @@ export default async (req, res) => {
     const {
         query: { name, currency },
     } = req
-    console.log(name, currency)
+    //console.log(name, currency)
     if(!name || name == '' || typeof name == 'undefined' || !currency
     || typeof currency == 'undefined') {
         return res.status(400).send("Bad Request")

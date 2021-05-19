@@ -16,14 +16,11 @@ export default function AccountInfo(props) {
     const [update, setUpdate] = useState("None")
     const [lastMine, setLastMine] = useState({
         last_mine: "None",
-        last_mine_tx: "None"
+        last_mine_tx: "None",
+        currentLand: "None"
     })
     const [history, setHistory] = useState([])
     const [minerName, setMinerName] = useState("Loading")
-
-    function getRandom(min, max) {
-        return Math.random() * (max - min) + min;
-    }
 
     const fetchCpuData = async (user) => {
         return await axios.get('/api/get_account/'+user)
@@ -59,10 +56,8 @@ export default function AccountInfo(props) {
     }
 
     const getMinerName = async (user) => {
-        await delay(getRandom(300,2000))
-        const minerName = await axios.post('https://wax.pink.gg/v1/chain/get_table_rows',
-        {json: true, code: "federation", scope: "federation", table: 'players', lower_bound: user, upper_bound: user}
-        ).then(function({data}) {
+        const minerName = await axios.get(`/api/get_tag/${user}`)
+        .then(function({data}) {
             //console.log(data.rows[0]);
             return data.rows[0].tag
         }).catch((err) => {
@@ -73,19 +68,19 @@ export default function AccountInfo(props) {
     }
 
     const getLastMineInfo = async (user) => {
-        await delay(getRandom(300,2000))
-        const lastMineData = await axios.post('https://wax.pink.gg/v1/chain/get_table_rows',
-        {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: user, upper_bound: user}
-        ).then(function({data}) {
+        const lastMineData = await axios.get(`/api/get_last_mine/${user}`)
+        .then(function({data}) {
             //console.log(data.rows[0]);
             return {
                 last_mine: data.rows[0].last_mine,
-                last_mine_tx: data.rows[0].last_mine_tx
+                last_mine_tx: data.rows[0].last_mine_tx,
+                currentLand: data.rows[0].current_land
             }
         }).catch((err) => {
             return {
                 last_mine: "None",
-                last_mine_tx: "None"
+                last_mine_tx: "None",
+                currentLand: "None"
             }
         })
         //console.log(lastMineData)
@@ -93,31 +88,23 @@ export default function AccountInfo(props) {
         //console.log("Last mine: "+lastMineString)
         const newLastMine = {
             last_mine: lastMineString,
-            last_mine_tx: lastMineData.last_mine_tx
+            last_mine_tx: lastMineData.last_mine_tx,
+            currentLand: lastMineData.currentLand
         }
         setLastMine(newLastMine)
     }
 
     const fetchLastMineTx = async (tx) => {
-        await delay(getRandom(300,2000))
         if(tx == "None") { return }
-        const lastMineTLM = await axios.get(`https://wax.eosrio.io/v2/history/get_transaction?id=${tx}`
+        const lastMineTLM = await axios.get(`/api/get_tx/${tx}`
         ).then(function({data}) {
             //console.log("TX RESP")
             //console.log(data)
             //console.log(data.actions[1].act.data.amount)
             return data.actions[1].act.data.amount
         }).catch(async (err) => {
-            console.log("EOSRIO ERR")
             console.log(err)
-            await delay(getRandom(300,2000))
-            return await axios.get(`https://wax.greymass.com/v1/history/get_transaction?id=${tx}`)
-            .then(({data}) => data.traces[1].act.data.quantity.slice(0, -4))
-            .catch((err2) => {
-                console.log("Fallback Greymass err")
-                console.log(err2)
-                return "ERR"
-            })
+            return "ERROR"
         })
         const newHistory = [...history]
         if(newHistory.length == 5) {
@@ -135,18 +122,15 @@ export default function AccountInfo(props) {
     }
 
     useEffect(async () => {
-        await delay(getRandom(300,5000))
         await getMinerName(acc)
     }, [acc])
 
     useEffect(async () => {
         //console.log("Loading... "+loading)
-        await delay(getRandom(300,5000))
         setUpdate(DateTime.now().setZone("local").toRFC2822())
         if(loading) {
             //console.log("Checking... "+acc)
             await fetchCpuData(acc)
-            await delay(getRandom(300,2000))
             await getLastMineInfo(acc)
         } else {
             //console.log("Not check!")
