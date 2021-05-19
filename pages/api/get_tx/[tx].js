@@ -20,7 +20,7 @@ export default async (req, res) => {
         return res.status(response.status).json(response.data)
     }).catch(async (err) => {
         console.log("EOSRIO ERR")
-        console.log(err)
+        console.log(err.response.status, err.response.statusText)
         await delay(getRandom(300,2000))
         return await axios.get(`https://wax.greymass.com/v1/history/get_transaction?id=${tx}`)
         .then((response) => res.status(response.status).json(response.data))

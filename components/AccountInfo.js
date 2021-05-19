@@ -15,9 +15,9 @@ export default function AccountInfo(props) {
     const isInitialTx = useRef(true)
     const [update, setUpdate] = useState("None")
     const [lastMine, setLastMine] = useState({
-        last_mine: "None",
-        last_mine_tx: "None",
-        currentLand: "None"
+        last_mine: "Loading",
+        last_mine_tx: "Loading",
+        currentLand: "Loading"
     })
     const [history, setHistory] = useState([])
     const [minerName, setMinerName] = useState("Loading")
@@ -208,6 +208,7 @@ export default function AccountInfo(props) {
             </div>
             <div className="flex flex-col lg:flex-row w-full mt-1 justify-between">
                 <div className="flex flex-col  gap-y-1 lg:gap-y-0.5 mt-1">
+                    <span className="text-xs font-bold text-red-500">Current land: <a href={'https://wax.atomichub.io/explorer/asset/'+lastMine.currentLand}>{lastMine.currentLand}</a></span>
                     <span className="text-xs">Last update: {update}</span>
                     <span className="text-xs">Next update: {DateTime.fromRFC2822(update).plus({ minutes: 1}).toRFC2822()}</span>
                 </div>
