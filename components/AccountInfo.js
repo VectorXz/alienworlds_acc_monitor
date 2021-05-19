@@ -26,15 +26,12 @@ export default function AccountInfo(props) {
     }
 
     const fetchCpuData = async (user) => {
-        await delay(getRandom(300,2000))
-        return await axios.post('https://chain.wax.io/v1/chain/get_account',
-        {
-            "account_name": user,
-        }
-        ).then(({data}) => {
+        return await axios.get('/api/get_account/'+user)
+        .then(({data}) => {
             const newState = {...data.cpu_limit, cpu_weight: data.self_delegated_bandwidth ? data.self_delegated_bandwidth.cpu_weight : data.total_resources.cpu_weight }
             setAccInfo(newState)
-        }).catch((err) => {
+        })
+        .catch((err) => {
             console.log("ERROR get cpu data")
             console.log(err.data)
             alert(
@@ -43,29 +40,18 @@ export default function AccountInfo(props) {
     }
   
     const getBalance = async (user) => {
-        await delay(getRandom(300,2000))
-        return await axios.post('https://chain.wax.io/v1/chain/get_currency_balance',
-        {
-            "code": "alien.worlds",
-            "account": user,
-            "symbol": "TLM"
-        }
-        ).then(({data}) => {
+        return await axios.get(`/api/get_balance/${user}/TLM`)
+        .then(({data}) => {
             setBalance(data[0].slice(0,-4))
-        }).catch((err) => {
+        })
+        .catch((err) => {
             setBalance("ERROR")
         })
     }
 
     const getWax = async (user) => {
-        await delay(getRandom(300,2000))
-        return await axios.post('https://chain.wax.io/v1/chain/get_currency_balance',
-        {
-            "code": "eosio.token",
-            "account": user,
-            "symbol": "WAX"
-        }
-        ).then(({data}) => {
+        return await axios.get(`/api/get_balance/${user}/WAX`)
+        .then(({data}) => {
             setWax(data[0].slice(0,-4))
         }).catch((err) => {
             setWax("ERROR")
