@@ -114,8 +114,11 @@ export default function Home(props) {
 
       <main className="flex flex-col w-full lg:w-3/6">
         <div className="flex flex-col">
-          <span className="text-5xl font-bold mb-3 text-center">AW Wax Account Monitor</span>
-          <span className="text-center text-sm">This website is open source on <a className="text-blue-400" href="https://github.com/VectorXz/alienworlds_acc_monitor">GitHub</a></span>
+          <span className="text-5xl font-bold mb-3 text-center">AW Wax Account Monitor <span className="text-sm text-blue-400">v1.1</span></span>
+          <div className="mx-2 px-2 font-bold text-green-600 bg-green-200 rounded-md text-center w-auto self-center">
+            <span className="text-center text-sm">Like this website? You can donate us by sending WAX to 1crtk.wam</span>
+          </div>
+          <span className="text-center text-sm mt-2">This website is open source on <a className="text-blue-400" href="https://github.com/VectorXz/alienworlds_acc_monitor">GitHub</a></span>
         </div>
 
         <div className="flex flex-col lg:flex-row w-full items-center justify-center rounded-md shadow-lg p-6 mt-10 mb-2 bg-gray-700 gap-x-4 gap-y-5 lg:gap-y-0">
