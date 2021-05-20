@@ -179,6 +179,7 @@ export default function AccountInfo(props) {
 
     const rawPercent = ((accInfo.used/accInfo.max)*100).toFixed(2)
     const percent = accInfo.used ? rawPercent > 100 ? 100 : rawPercent : 0
+    const barColor = percent >= 80 ? "bg-red-600" : percent >= 50 ? "bg-yellow-600" : "bg-blue-600"
 
     return (
         <div className="flex flex-col my-5">
@@ -193,7 +194,7 @@ export default function AccountInfo(props) {
                 </div>
                 <div className="flex-1 w-full lg:w-9/12">
                     <div className="overflow-hidden h-5 text-xs flex rounded bg-gray-800 w-full">
-                        <div style={{ width: percent+"%" }} className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-600">
+                        <div style={{ width: percent+"%" }} className={`shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center ${barColor}`}>
                             {accInfo.used && <span className="font-bold">{rawPercent}% ({accInfo.used/1000} ms/{accInfo.max/1000} ms)</span>}
                             {!accInfo.used && <span className="font-bold">Loading...</span>}
                         </div>
