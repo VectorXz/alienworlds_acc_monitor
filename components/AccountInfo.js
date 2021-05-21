@@ -28,7 +28,7 @@ export default function AccountInfo(props) {
 
     const fetchAccountData = async (user) => {
         await delay(getRandom(100, 2000))
-        return axios.get(`https://hyperion.wax.eosdetroit.io/v2/state/get_account?account=${user}`, {
+        return axios.get(`https://wax.blokcrafters.io/v2/state/get_account?account=${user}`, {
             timeout: 10000
         })
         .then((resp) => {
@@ -79,11 +79,10 @@ export default function AccountInfo(props) {
                     setBalance(lastTokenBalance[0]) //set tlm balance
                     setWax(lastTokenBalance[1]) //set wax balance
                 }
+            }).catch((err) => {
+                console.log("Get account error "+user)
+                console.log(err.response)
             })
-        })
-        .catch((err) => {
-            console.log("Get account error "+user)
-            console.log(err.response)
         })
     }
 
@@ -230,7 +229,7 @@ export default function AccountInfo(props) {
 
     useEffect(async () => {
         //console.log("Loading... "+loading)
-        await delay(getRandom(300,1000))
+        await delay(getRandom(100, 5000))
         setUpdate(DateTime.now().setZone("local").toRFC2822())
         if(loading) {
             //console.log("Checking... "+acc)
