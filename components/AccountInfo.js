@@ -304,7 +304,7 @@ export default function AccountInfo(props) {
                 <div className="flex flex-col  gap-y-1 lg:gap-y-0.5 mt-1">
                     <span className="text-xs font-bold text-red-500">Current land: <a href={'https://wax.atomichub.io/explorer/asset/'+lastMine.currentLand}>{lastMine.currentLand}</a></span>
                     <span className="text-xs">Last update: {update}</span>
-                    <span className="text-xs">Next update: {DateTime.fromRFC2822(update).plus({ minutes: 1}).toRFC2822()}</span>
+                    <span className="text-xs">Next update: {DateTime.fromRFC2822(update).plus({ minutes: 1, seconds: 30}).toRFC2822()}</span>
                 </div>
                 <div className="flex flex-row lg:flex-col flex-wrap lg:flex-nowrap gap-y-2 mt-2 lg:mt-0 lg:gap-y-0.5">
                     <span className="text-sm font-bold self-end">Last TLM mined ({lastMine.last_mine}):</span>
