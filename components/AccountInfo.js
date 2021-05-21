@@ -22,47 +22,62 @@ export default function AccountInfo(props) {
     const [history, setHistory] = useState([])
     const [minerName, setMinerName] = useState("Loading")
 
+    function getRandom(min, max) {
+        return Math.random() * (max - min) + min;
+    }
+
     const fetchCpuData = async (user) => {
-        return await axios.get('/api/get_account/'+user)
-        .then(({data}) => {
+        await delay(getRandom(300,2000))
+        return await axios.post('https://wax.eosn.io/v1/chain/get_account',
+        {
+            "account_name": user,
+        }
+        ).then(({data}) => {
             const newState = {...data.cpu_limit, cpu_weight: data.self_delegated_bandwidth ? data.self_delegated_bandwidth.cpu_weight : data.total_resources.cpu_weight }
             setAccInfo(newState)
-        })
-        .catch((err) => {
+        }).catch((err) => {
             console.log("ERROR get cpu data")
             console.log(err.data)
-            console.log(
+            alert(
             `Error!, server cannot get data of account: ${acc}\nThis account does not exists on WAX, or there is a typo error, please check your spelling!`)
         })
     }
   
     const getBalance = async (user) => {
-        return await axios.get(`/api/get_balance/${user}/TLM`)
-        .then(({data}) => {
+        await delay(getRandom(300,2000))
+        return await axios.post('https://wax.eosphere.io/v1/chain/get_currency_balance',
+        {
+            "code": "alien.worlds",
+            "account": user,
+            "symbol": "TLM"
+        }
+        ).then(({data}) => {
             setBalance(data[0].slice(0,-4))
-        })
-        .catch((err) => {
+        }).catch((err) => {
             setBalance("ERROR")
         })
     }
 
     const getWax = async (user) => {
-        return await axios.get(`/api/get_balance/${user}/WAX`)
-        .then(({data}) => {
+        await delay(getRandom(300,2000))
+        return await axios.post('https://wax.eosphere.io/v1/chain/get_currency_balance',
+        {
+            "code": "eosio.token",
+            "account": user,
+            "symbol": "WAX"
+        }
+        ).then(({data}) => {
             setWax(data[0].slice(0,-4))
         }).catch((err) => {
-            console.log(err.response)
-            if(err.response.status == 500 && err.response.data.message.includes('empty')) {
-                setWax("0.00000000")
-            } else {
-                setWax("ERROR")
-            }
+            setWax("ERROR")
         })
     }
 
     const getMinerName = async (user) => {
-        const minerName = await axios.get(`/api/get_tag/${user}`)
-        .then(function({data}) {
+        await delay(getRandom(300,2000))
+        const minerName = await axios.post('https://wax.pink.gg/v1/chain/get_table_rows',
+        {json: true, code: "federation", scope: "federation", table: 'players', lower_bound: user, upper_bound: user}
+        ).then(function({data}) {
             //console.log(data.rows[0]);
             return data.rows[0].tag
         }).catch((err) => {
@@ -73,8 +88,10 @@ export default function AccountInfo(props) {
     }
 
     const getLastMineInfo = async (user) => {
-        const lastMineData = await axios.get(`/api/get_last_mine/${user}`)
-        .then(function({data}) {
+        await delay(getRandom(300,2000))
+        const lastMineData = await axios.post('https://wax.pink.gg/v1/chain/get_table_rows',
+        {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: user, upper_bound: user}
+        ).then(function({data}) {
             //console.log(data.rows[0]);
             return {
                 last_mine: data.rows[0].last_mine,
@@ -89,27 +106,35 @@ export default function AccountInfo(props) {
             }
         })
         //console.log(lastMineData)
-        const lastMineString = lastMineData.last_mine != "None" ? DateTime.fromISO(lastMineData.last_mine+"Z").setZone("local").toRelative() : "Error"
+        const lastMineString = lastMineData.last_mine != "None" ? DateTime.fromISO(lastMineData.last_mine+"Z").setZone("local").toRFC2822() : "Error"
         //console.log("Last mine: "+lastMineString)
         const newLastMine = {
             last_mine: lastMineString,
-            last_mine_tx: lastMineData.last_mine_tx,
-            currentLand: lastMineData.currentLand
+            last_mine_tx: lastMineData.last_mine_tx
         }
         setLastMine(newLastMine)
     }
 
     const fetchLastMineTx = async (tx) => {
+        await delay(getRandom(300,2000))
         if(tx == "None") { return }
-        const lastMineTLM = await axios.get(`/api/get_tx/${tx}`
+        const lastMineTLM = await axios.get(`https://wax.eosrio.io/v2/history/get_transaction?id=${tx}`
         ).then(function({data}) {
             //console.log("TX RESP")
             //console.log(data)
             //console.log(data.actions[1].act.data.amount)
             return data.actions[1].act.data.amount
         }).catch(async (err) => {
+            console.log("EOSRIO ERR")
             console.log(err)
-            return "ERROR"
+            await delay(getRandom(300,2000))
+            return await axios.get(`https://wax.greymass.com/v1/history/get_transaction?id=${tx}`)
+            .then(({data}) => data.traces[1].act.data.quantity.slice(0, -4))
+            .catch((err2) => {
+                console.log("Fallback Greymass err")
+                console.log(err2)
+                return "ERR"
+            })
         })
         const newHistory = [...history]
         if(newHistory.length == 5) {
@@ -127,15 +152,18 @@ export default function AccountInfo(props) {
     }
 
     useEffect(async () => {
+        await delay(getRandom(300,5000))
         await getMinerName(acc)
     }, [acc])
 
     useEffect(async () => {
         //console.log("Loading... "+loading)
+        await delay(getRandom(300,5000))
         setUpdate(DateTime.now().setZone("local").toRFC2822())
         if(loading) {
             //console.log("Checking... "+acc)
             await fetchCpuData(acc)
+            await delay(getRandom(300,5000))
             await getLastMineInfo(acc)
         } else {
             //console.log("Not check!")
