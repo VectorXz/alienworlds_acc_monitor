@@ -34,12 +34,12 @@ export default function AccountInfo(props) {
         .then((resp) => {
             if(resp.status == 200) {
                 const data = resp.data
-                console.log(data)
+                //console.log(data)
                 const newCpuState = {
                     ...data.account.cpu_limit,
                     cpu_weight: data.account.total_resources.cpu_weight
                 }
-                console.log(newCpuState)
+                //console.log(newCpuState)
                 setAccInfo(newCpuState)
                 let lastTokenBalance = [0, 0]
                 for (let token of data.tokens) {
