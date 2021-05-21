@@ -87,7 +87,7 @@ export default function AccountInfo(props) {
     }
 
     const getMinerName = async (user) => {
-        await delay(getRandom(300,2000))
+        await delay(getRandom(300,5000))
         const minerName = await axios.post('https://wax.pink.gg/v1/chain/get_table_rows',
         {json: true, code: "federation", scope: "federation", table: 'players', lower_bound: user, upper_bound: user},
         {
@@ -115,7 +115,7 @@ export default function AccountInfo(props) {
     }
 
     const getLastMineInfo = async (user) => {
-        await delay(getRandom(300,2000))
+        await delay(getRandom(300,5000))
         const lastMineData = await axios.post('https://hyperion.wax.eosdetroit.io/v1/chain/get_table_rows',
         {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: user, upper_bound: user},
         {
@@ -173,7 +173,7 @@ export default function AccountInfo(props) {
     }
 
     const fetchLastMineTx = async (tx) => {
-        await delay(getRandom(300,2000))
+        await delay(getRandom(300,5000))
         if(tx == "None") { return }
         const lastMineTLM = await axios.get(`https://wax.eosrio.io/v2/history/get_transaction?id=${tx}`,{
             timeout: 30000
@@ -183,7 +183,7 @@ export default function AccountInfo(props) {
         }).catch(async (err) => {
             console.log("EOSRIO ERR")
             console.log(err)
-            await delay(getRandom(300,2000))
+            await delay(getRandom(300,5000))
             return axios.get(`https://wax.greymass.com/v1/history/get_transaction?id=${tx}`,{
                 timeout: 30000
             })
