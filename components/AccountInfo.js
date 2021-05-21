@@ -26,114 +26,186 @@ export default function AccountInfo(props) {
         return Math.random() * (max - min) + min;
     }
 
-    const fetchCpuData = async (user) => {
-        await delay(getRandom(300,2000))
-        return await axios.post('https://wax.eosn.io/v1/chain/get_account',
-        {
-            "account_name": user,
-        }
-        ).then(({data}) => {
-            const newState = {...data.cpu_limit, cpu_weight: data.self_delegated_bandwidth ? data.self_delegated_bandwidth.cpu_weight : data.total_resources.cpu_weight }
-            setAccInfo(newState)
-        }).catch((err) => {
-            console.log("ERROR get cpu data")
-            console.log(err.data)
-            alert(
-            `Error!, server cannot get data of account: ${acc}\nThis account does not exists on WAX, or there is a typo error, please check your spelling!`)
+    const fetchAccountData = async (user) => {
+        await delay(getRandom(100, 2000))
+        return axios.get(`https://wax.blokcrafters.io/v2/state/get_account?account=${user}`, {
+            timeout: 30000
         })
-    }
-  
-    const getBalance = async (user) => {
-        await delay(getRandom(300,2000))
-        return await axios.post('https://wax.eosphere.io/v1/chain/get_currency_balance',
-        {
-            "code": "alien.worlds",
-            "account": user,
-            "symbol": "TLM"
-        }
-        ).then(({data}) => {
-            setBalance(data[0].slice(0,-4))
-        }).catch((err) => {
-            setBalance("ERROR")
+        .then((resp) => {
+            if(resp.status == 200) {
+                const data = resp.data
+                //console.log(data)
+                const newCpuState = {
+                    ...data.account.cpu_limit,
+                    cpu_weight: data.account.total_resources.cpu_weight
+                }
+                //console.log(newCpuState)
+                setAccInfo(newCpuState)
+                let lastTokenBalance = [0, 0]
+                for (let token of data.tokens) {
+                    if(token.symbol === "WAX") {
+                        lastTokenBalance[1] = token.amount
+                    } else if(token.symbol === "TLM") {
+                        lastTokenBalance[0] = token.amount
+                    }
+                }
+                setBalance(lastTokenBalance[0]) //set tlm balance
+                setWax(lastTokenBalance[1]) //set wax balance
+            }
         })
-    }
-
-    const getWax = async (user) => {
-        await delay(getRandom(300,2000))
-        return await axios.post('https://wax.eosphere.io/v1/chain/get_currency_balance',
-        {
-            "code": "eosio.token",
-            "account": user,
-            "symbol": "WAX"
-        }
-        ).then(({data}) => {
-            setWax(data[0].slice(0,-4))
-        }).catch((err) => {
-            setWax("ERROR")
+        .catch(async (err) => {
+            if(err.response.status === 500 && err.response.data.message.includes("not found")) return
+            return axios.get(`https://wax.cryptolions.io/v2/state/get_account?account=${user}`, {
+                timeout: 30000
+            })
+            .then((resp) => {
+                if(resp.status == 200) {
+                    const data = resp.data
+                    //console.log(data)
+                    const newCpuState = {
+                        ...data.account.cpu_limit,
+                        cpu_weight: data.account.total_resources.cpu_weight
+                    }
+                    //console.log(newCpuState)
+                    setAccInfo(newCpuState)
+                    let lastTokenBalance = [0, 0]
+                    for (let token of data.tokens) {
+                        if(token.symbol === "WAX") {
+                            lastTokenBalance[1] = token.amount
+                        } else if(token.symbol === "TLM") {
+                            lastTokenBalance[0] = token.amount
+                        }
+                    }
+                    setBalance(lastTokenBalance[0]) //set tlm balance
+                    setWax(lastTokenBalance[1]) //set wax balance
+                }
+            }).catch((err) => {
+                console.log("Get account error "+user)
+                console.log(err.response)
+            })
         })
     }
 
     const getMinerName = async (user) => {
-        await delay(getRandom(300,2000))
+        await delay(getRandom(300,5000))
         const minerName = await axios.post('https://wax.pink.gg/v1/chain/get_table_rows',
-        {json: true, code: "federation", scope: "federation", table: 'players', lower_bound: user, upper_bound: user}
+        {json: true, code: "federation", scope: "federation", table: 'players', lower_bound: user, upper_bound: user},
+        {
+            timeout: 30000
+        }
         ).then(function({data}) {
             //console.log(data.rows[0]);
+            if(data.rows.length < 1) return "Error"
             return data.rows[0].tag
         }).catch((err) => {
-            return "Error"
+            return axios.get(`/api/get_tag/${user}`)
+            .then(function({data}) {
+                return data.rows[0].tag
+            }).catch((err) => {
+                return "Error"
+            })
         })
         //console.log(minerName)
-        setMinerName(minerName)
+        if(minerName == "Error") {
+            alert(`${user} is not alien worlds account, please check your spelling!`)
+            onDelete(acc)
+        } else {
+            setMinerName(minerName)
+        }
     }
 
     const getLastMineInfo = async (user) => {
-        await delay(getRandom(300,2000))
-        const lastMineData = await axios.post('https://wax.pink.gg/v1/chain/get_table_rows',
-        {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: user, upper_bound: user}
+        await delay(getRandom(300,5000))
+        const lastMineData = await axios.post('https://hyperion.wax.eosdetroit.io/v1/chain/get_table_rows',
+        {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: user, upper_bound: user},
+        {
+            timeout: 30000
+        }
         ).then(function({data}) {
             //console.log(data.rows[0]);
+            if(data.rows.length < 1) return {
+                last_mine: "None",
+                last_mine_tx: "None",
+                currentLand: "None"
+            }
             return {
                 last_mine: data.rows[0].last_mine,
                 last_mine_tx: data.rows[0].last_mine_tx,
                 currentLand: data.rows[0].current_land
             }
         }).catch((err) => {
-            return {
-                last_mine: "None",
-                last_mine_tx: "None",
-                currentLand: "None"
-            }
+            return axios.post('https://wax.eosphere.io/v1/chain/get_table_rows',
+            {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: user, upper_bound: user}
+            )
+            .then(({data}) => {
+                return {
+                    last_mine: data.rows[0].last_mine,
+                    last_mine_tx: data.rows[0].last_mine_tx,
+                    currentLand: data.rows[0].current_land
+                }
+            }).catch((err) => {
+                return axios.get(`/api/get_last_mine/${user}`)
+                .then(({data}) => {
+                    return {
+                        last_mine: data.rows[0].last_mine,
+                        last_mine_tx: data.rows[0].last_mine_tx,
+                        currentLand: data.rows[0].current_land
+                    }
+                })
+                .catch((err) => {
+                    return {
+                        last_mine: "None",
+                        last_mine_tx: "None",
+                        currentLand: "None"
+                    }
+                })
+            })
         })
         //console.log(lastMineData)
         const lastMineString = lastMineData.last_mine != "None" ? DateTime.fromISO(lastMineData.last_mine+"Z").setZone("local").toRelative() : "Error"
         //console.log("Last mine: "+lastMineString)
         const newLastMine = {
             last_mine: lastMineString,
-            last_mine_tx: lastMineData.last_mine_tx
+            last_mine_tx: lastMineData.last_mine_tx,
+            currentLand: lastMineData.currentLand
         }
         setLastMine(newLastMine)
     }
 
     const fetchLastMineTx = async (tx) => {
-        await delay(getRandom(300,2000))
+        await delay(getRandom(300,5000))
         if(tx == "None") { return }
-        const lastMineTLM = await axios.get(`https://wax.eosrio.io/v2/history/get_transaction?id=${tx}`
+        const lastMineTLM = await axios.get(`https://wax.eosrio.io/v2/history/get_transaction?id=${tx}`,{
+            timeout: 30000
+        }
         ).then(function({data}) {
-            //console.log("TX RESP")
-            //console.log(data)
-            //console.log(data.actions[1].act.data.amount)
             return data.actions[1].act.data.amount
         }).catch(async (err) => {
             console.log("EOSRIO ERR")
-            console.log(err)
-            await delay(getRandom(300,2000))
-            return await axios.get(`https://wax.greymass.com/v1/history/get_transaction?id=${tx}`)
+            //console.log(err)
+            await delay(getRandom(300,5000))
+            return axios.get(`https://wax.greymass.com/v1/history/get_transaction?id=${tx}`,{
+                timeout: 30000
+            })
             .then(({data}) => data.traces[1].act.data.quantity.slice(0, -4))
             .catch((err2) => {
                 console.log("Fallback Greymass err")
-                console.log(err2)
-                return "ERR"
+                console.log(err2.response)
+                return axios.get(`https://wax.blokcrafters.io/v2/history/get_transaction?id=${tx}`,{
+                    timeout: 30000
+                })
+                .then(({data}) => data.actions[1].act.data.amount)
+                .catch((err3) => {
+                    console.log("3rd Fallback error")
+                    console.log(err3.response)
+                    return axios.get(`/get_tx/${tx}`)
+                    .then(({data}) => data.actions[1].act.data.amount)
+                    .catch((err4) => {
+                        console.log("Local fallback error")
+                        console.log(err4.response)
+                        return "ERR"
+                    })
+                })
             })
         })
         const newHistory = [...history]
@@ -152,35 +224,23 @@ export default function AccountInfo(props) {
     }
 
     useEffect(async () => {
-        await delay(getRandom(300,5000))
         await getMinerName(acc)
     }, [acc])
 
     useEffect(async () => {
         //console.log("Loading... "+loading)
-        await delay(getRandom(300,5000))
+        await delay(getRandom(100, 5000))
         setUpdate(DateTime.now().setZone("local").toRFC2822())
         if(loading) {
             //console.log("Checking... "+acc)
-            await fetchCpuData(acc)
-            await delay(getRandom(300,5000))
+            await fetchAccountData(acc)
+            await delay(getRandom(100,3000))
             await getLastMineInfo(acc)
+            setLoading(false)
         } else {
             //console.log("Not check!")
         }
     }, [loading])
-
-    useEffect(async () => {
-        if(isInitialMount.current) {
-            isInitialMount.current = false
-        } else {
-            //console.log("CPU Changed!, is now")
-            //console.log(accInfo)
-            await getBalance(acc)
-            await getWax(acc)
-            setLoading(false)
-        }
-    }, [accInfo])
 
     useEffect(() => {
         //console.log("Balance changed")
@@ -192,7 +252,7 @@ export default function AccountInfo(props) {
         const interval = setInterval(async () => {
             //console.log("It's time to checking!")
             setLoading(true)
-        }, 60000);
+        }, 90000);
         return () => clearInterval(interval);
     }, []);
 
@@ -201,6 +261,7 @@ export default function AccountInfo(props) {
             isInitialTx.current = false
         } else {
             //console.log("Last mine TX Changed!")
+            if(lastMine.last_mine_tx == "Loading" || lastMine.last_mine_tx == "None") return
             await fetchLastMineTx(lastMine.last_mine_tx)
         }
     }, [lastMine.last_mine_tx])
@@ -244,7 +305,7 @@ export default function AccountInfo(props) {
                 <div className="flex flex-col  gap-y-1 lg:gap-y-0.5 mt-1">
                     <span className="text-xs font-bold text-red-500">Current land: <a href={'https://wax.atomichub.io/explorer/asset/'+lastMine.currentLand}>{lastMine.currentLand}</a></span>
                     <span className="text-xs">Last update: {update}</span>
-                    <span className="text-xs">Next update: {DateTime.fromRFC2822(update).plus({ minutes: 1}).toRFC2822()}</span>
+                    <span className="text-xs">Next update: {DateTime.fromRFC2822(update).plus({ minutes: 1, seconds: 30}).toRFC2822()}</span>
                 </div>
                 <div className="flex flex-row lg:flex-col flex-wrap lg:flex-nowrap gap-y-2 mt-2 lg:mt-0 lg:gap-y-0.5">
                     <span className="text-sm font-bold self-end">Last TLM mined ({lastMine.last_mine}):</span>

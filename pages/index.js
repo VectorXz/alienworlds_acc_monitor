@@ -162,7 +162,7 @@ export default function Home(props) {
       </main>
 
       <div className="flex flex-col rounded-md items-center justify-center p-6 my-3 w-full lg:w-5/6 bg-gray-700">
-        <span className="text-lg font-bold text-center my-1 text-indigo-300">Data will automatically refresh every 60 secs</span>
+        <span className="text-lg font-bold text-center my-1 text-indigo-300">Data will automatically refresh every 90 secs</span>
         <span className="text-lg font-bold text-center my-1 text-indigo-300">Click at trash icon to delete account</span>
         <AccountTable accounts={account} onDelete={handleDeleteAcc} onTotalChange={(newTotal) => { setTotal(newTotal) }} />
       </div>
@@ -171,10 +171,10 @@ export default function Home(props) {
 }
 
 export async function getServerSideProps(context) {
-  console.log(context.query)
+  //console.log(context.query)
   if('accounts' in context.query) {
     const acc = JSON.parse(atob(context.query.accounts))
-    console.log(acc)
+    //console.log(acc)
     return {
       props: {
         urlAcc: acc

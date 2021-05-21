@@ -12,7 +12,7 @@ export default async (req, res) => {
         return Math.random() * (max - min) + min;
     }
     await delay(getRandom(100,2000))
-    await axios.post('https://wax.pink.gg/v1/chain/get_table_rows',
+    await axios.post('https://wax.greymass.com/v1/chain/get_table_rows',
     {json: true, code: "federation", scope: "federation", table: 'players', lower_bound: name, upper_bound: name}
     ).then((response) => {
         //console.log(data.rows[0]);

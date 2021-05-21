@@ -12,7 +12,7 @@ export default async (req, res) => {
         return Math.random() * (max - min) + min;
     }
     await delay(getRandom(100,2000))
-    await axios.post('https://wax.pink.gg/v1/chain/get_account',
+    await axios.post('https://chain.wax.io/v1/chain/get_account',
     {
         "account_name": name,
     }
