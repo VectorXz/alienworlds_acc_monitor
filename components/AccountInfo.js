@@ -182,7 +182,7 @@ export default function AccountInfo(props) {
             return data.actions[1].act.data.amount
         }).catch(async (err) => {
             console.log("EOSRIO ERR")
-            console.log(err)
+            //console.log(err)
             await delay(getRandom(300,5000))
             return axios.get(`https://wax.greymass.com/v1/history/get_transaction?id=${tx}`,{
                 timeout: 30000
