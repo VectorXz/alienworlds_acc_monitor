@@ -106,7 +106,7 @@ export default function AccountInfo(props) {
             }
         })
         //console.log(lastMineData)
-        const lastMineString = lastMineData.last_mine != "None" ? DateTime.fromISO(lastMineData.last_mine+"Z").setZone("local").toRFC2822() : "Error"
+        const lastMineString = lastMineData.last_mine != "None" ? DateTime.fromISO(lastMineData.last_mine+"Z").setZone("local").toRelative() : "Error"
         //console.log("Last mine: "+lastMineString)
         const newLastMine = {
             last_mine: lastMineString,
