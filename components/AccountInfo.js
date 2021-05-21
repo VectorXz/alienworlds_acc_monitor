@@ -236,6 +236,7 @@ export default function AccountInfo(props) {
             await fetchAccountData(acc)
             await delay(getRandom(100,3000))
             await getLastMineInfo(acc)
+            setLoading(false)
         } else {
             //console.log("Not check!")
         }
