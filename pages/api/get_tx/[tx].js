@@ -22,10 +22,10 @@ export default async (req, res) => {
         console.log("EOSRIO ERR")
         console.log(err.response.status, err.response.statusText)
         await delay(getRandom(300,2000))
-        return await axios.get(`https://wax.greymass.com/v1/history/get_transaction?id=${tx}`)
+        return axios.get(`https://wax.blokcrafters.io/v2/history/get_transaction?id=${tx}`)
         .then((response) => res.status(response.status).json(response.data))
         .catch((err2) => {
-            console.log("Fallback Greymass err")
+            console.log("Fallback blockcrafter err")
             console.log(err2)
             return res.status(err2.response.status).json(err.response.data)
         })
