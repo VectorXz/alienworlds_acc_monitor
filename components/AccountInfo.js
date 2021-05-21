@@ -29,7 +29,7 @@ export default function AccountInfo(props) {
     const fetchAccountData = async (user) => {
         await delay(getRandom(100, 2000))
         return axios.get(`https://wax.blokcrafters.io/v2/state/get_account?account=${user}`, {
-            timeout: 10000
+            timeout: 30000
         })
         .then((resp) => {
             if(resp.status == 200) {
@@ -56,7 +56,7 @@ export default function AccountInfo(props) {
         .catch(async (err) => {
             if(err.response.status === 500 && err.response.data.message.includes("not found")) return
             return axios.get(`https://wax.cryptolions.io/v2/state/get_account?account=${user}`, {
-                timeout: 10000
+                timeout: 30000
             })
             .then((resp) => {
                 if(resp.status == 200) {
@@ -91,7 +91,7 @@ export default function AccountInfo(props) {
         const minerName = await axios.post('https://wax.pink.gg/v1/chain/get_table_rows',
         {json: true, code: "federation", scope: "federation", table: 'players', lower_bound: user, upper_bound: user},
         {
-            timeout: 10000
+            timeout: 30000
         }
         ).then(function({data}) {
             //console.log(data.rows[0]);
@@ -119,7 +119,7 @@ export default function AccountInfo(props) {
         const lastMineData = await axios.post('https://hyperion.wax.eosdetroit.io/v1/chain/get_table_rows',
         {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: user, upper_bound: user},
         {
-            timeout: 10000
+            timeout: 30000
         }
         ).then(function({data}) {
             //console.log(data.rows[0]);
@@ -176,7 +176,7 @@ export default function AccountInfo(props) {
         await delay(getRandom(300,2000))
         if(tx == "None") { return }
         const lastMineTLM = await axios.get(`https://wax.eosrio.io/v2/history/get_transaction?id=${tx}`,{
-            timeout: 10000
+            timeout: 30000
         }
         ).then(function({data}) {
             return data.actions[1].act.data.amount
@@ -185,14 +185,14 @@ export default function AccountInfo(props) {
             console.log(err)
             await delay(getRandom(300,2000))
             return axios.get(`https://wax.greymass.com/v1/history/get_transaction?id=${tx}`,{
-                timeout: 10000
+                timeout: 30000
             })
             .then(({data}) => data.traces[1].act.data.quantity.slice(0, -4))
             .catch((err2) => {
                 console.log("Fallback Greymass err")
                 console.log(err2.response)
                 return axios.get(`https://wax.blokcrafters.io/v2/history/get_transaction?id=${tx}`,{
-                    timeout: 10000
+                    timeout: 30000
                 })
                 .then(({data}) => data.actions[1].act.data.amount)
                 .catch((err3) => {
