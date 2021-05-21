@@ -116,7 +116,7 @@ export default function AccountInfo(props) {
 
     const getLastMineInfo = async (user) => {
         await delay(getRandom(300,5000))
-        const lastMineData = await axios.post('https://hyperion.wax.eosdetroit.io/v1/chain/get_table_rows',
+        const lastMineData = await axios.post('https://wax.eosn.io/v1/chain/get_table_rows',
         {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: user, upper_bound: user},
         {
             timeout: 30000
