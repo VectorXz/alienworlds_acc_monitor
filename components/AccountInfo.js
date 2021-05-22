@@ -135,7 +135,10 @@ export default function AccountInfo(props) {
             }
         }).catch((err) => {
             return axios.post('https://wax.eosphere.io/v1/chain/get_table_rows',
-            {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: user, upper_bound: user}
+            {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: user, upper_bound: user},
+            {
+                timeout: 15000
+            }
             )
             .then(({data}) => {
                 return {

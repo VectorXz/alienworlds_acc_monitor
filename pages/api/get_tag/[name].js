@@ -14,7 +14,8 @@ export default async (req, res) => {
     }
     await delay(getRandom(100,2000))
     await axios.post('https://wax.greymass.com/v1/chain/get_table_rows',
-    {json: true, code: "federation", scope: "federation", table: 'players', lower_bound: name, upper_bound: name}
+    {json: true, code: "federation", scope: "federation", table: 'players', lower_bound: name, upper_bound: name},
+    { timeout: 15000 }
     ).then((response) => {
         //console.log(data.rows[0]);
         return res.status(response.status).json(response.data)

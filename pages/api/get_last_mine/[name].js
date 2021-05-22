@@ -13,15 +13,23 @@ export default async (req, res) => {
         return Math.random() * (max - min) + min;
     }
     await delay(getRandom(100,2000))
-    await axios.post('https://wax.greymass.com/v1/chain/get_table_rows',
-    {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: name, upper_bound: name}
+    await axios.post('https://chain.wax.io/v1/chain/get_table_rows',
+    {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: name, upper_bound: name},
+    { timeout: 15000 }
     ).then((response) => {
         //console.log(data.rows[0]);
         return res.status(response.status).json(response.data)
     }).catch((err) => {
-        console.log("Error get last mine data")
-        console.log(err)
-        return res.status(err.response.status).json(err.response.data)
+        return axios.post('https://api-wax.eosarabia.net/v1/chain/get_table_rows',
+        {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: name, upper_bound: name},
+        { timeout: 15000 }
+        ).then((response) => {
+            return response.status(response.status).json(response.data)
+        }).catch((err) => {
+            console.log("Error get last mine data")
+            console.log(err)
+            return res.status(err.response.status).json(err.response.data)
+        })
     })
     // await axios.post('https://wax.pink.gg/v1/chain/get_account',
     // {
