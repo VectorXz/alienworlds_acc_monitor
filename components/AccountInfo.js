@@ -198,7 +198,7 @@ export default function AccountInfo(props) {
                 .catch((err3) => {
                     console.log("3rd Fallback error")
                     //console.log(err3.response)
-                    return axios.get(`/get_tx/${tx}`)
+                    return axios.get(`/api/get_tx/${tx}`)
                     .then(({data}) => data.actions[1].act.data.amount)
                     .catch((err4) => {
                         console.log("Local fallback error")
