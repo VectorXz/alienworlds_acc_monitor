@@ -3,6 +3,7 @@ import axios from 'axios'
 import delay from 'delay'
 
 export default async (req, res) => {
+    console.log("/get_tag called")
     const {
         query: { name },
     } = req

@@ -6,6 +6,7 @@ export default async (req, res) => {
     const {
         query: { name, currency },
     } = req
+    console.log(`/get_balance/${currency} called`)
     //console.log(name, currency)
     if(!name || name == '' || typeof name == 'undefined' || !currency
     || typeof currency == 'undefined') {

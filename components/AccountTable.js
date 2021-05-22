@@ -1,5 +1,6 @@
-import AccountInfo from './AccountInfo'
-import { useState, useEffect } from 'react'
+import AccountInfo from './AccountInfo';
+import { useState, useEffect } from 'react';
+import http from './Axios';
 
 export default function AccountTable(props) {
     const { accounts, onDelete, onTotalChange } = props
@@ -37,7 +38,7 @@ export default function AccountTable(props) {
             {accounts.length === 0 && <span className="text-3xl font-bold text-center text-red-400">No accounts added yet!</span>}
             {accounts.length > 0 && accounts.map((acc, i) => {
                 return (
-                    <AccountInfo key={i} index={i} account={acc} onDelete={onDelete} onBalChange={(amt) => onBalChange(i, amt)} />
+                    <AccountInfo key={i} index={i} account={acc} onDelete={onDelete} onBalChange={(amt) => onBalChange(i, amt)} axios={http} />
                 )
             })}
         </div>

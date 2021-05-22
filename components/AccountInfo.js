@@ -1,10 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
-import axios from 'axios'
 const { DateTime } = require("luxon");
 import delay from 'delay'
 
 export default function AccountInfo(props) {
-    const { account, onDelete, onBalChange, index } = props
+    const { account, onDelete, onBalChange, index, axios } = props
 
     const [acc, setAcc] = useState(account)
     const [loading, setLoading] = useState(true)
@@ -29,7 +28,7 @@ export default function AccountInfo(props) {
     const fetchAccountData = async (user) => {
         await delay(getRandom(100, 2000))
         return axios.get(`https://wax.blokcrafters.io/v2/state/get_account?account=${user}`, {
-            timeout: 30000
+            timeout: 15000
         })
         .then((resp) => {
             if(resp.status == 200) {
@@ -54,9 +53,10 @@ export default function AccountInfo(props) {
             }
         })
         .catch(async (err) => {
-            if(err.response.status === 500 && err.response.data.message.includes("not found")) return
+            console.log(err)
+            if(err.response && err.response.status === 500 && err.response.data.message.includes("not found")) return
             return axios.get(`https://wax.cryptolions.io/v2/state/get_account?account=${user}`, {
-                timeout: 30000
+                timeout: 15000
             })
             .then((resp) => {
                 if(resp.status == 200) {
@@ -91,7 +91,7 @@ export default function AccountInfo(props) {
         const minerName = await axios.post('https://wax.pink.gg/v1/chain/get_table_rows',
         {json: true, code: "federation", scope: "federation", table: 'players', lower_bound: user, upper_bound: user},
         {
-            timeout: 30000
+            timeout: 15000
         }
         ).then(function({data}) {
             //console.log(data.rows[0]);
@@ -119,7 +119,7 @@ export default function AccountInfo(props) {
         const lastMineData = await axios.post('https://wax.eosn.io/v1/chain/get_table_rows',
         {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: user, upper_bound: user},
         {
-            timeout: 30000
+            timeout: 15000
         }
         ).then(function({data}) {
             //console.log(data.rows[0]);
@@ -175,29 +175,29 @@ export default function AccountInfo(props) {
     const fetchLastMineTx = async (tx) => {
         await delay(getRandom(300,5000))
         if(tx == "None") { return }
-        const lastMineTLM = await axios.get(`https://wax.eosrio.io/v2/history/get_transaction?id=${tx}`,{
-            timeout: 30000
+        const lastMineTLM = await axios.get(`https://wax.blokcrafters.io/v2/history/get_transaction?id=${tx}`,{
+            timeout: 15000
         }
         ).then(function({data}) {
             return data.actions[1].act.data.amount
         }).catch(async (err) => {
-            console.log("EOSRIO ERR")
-            //console.log(err)
+            //console.log("EOSRIO ERR")
+            //console.log(err.message)
             await delay(getRandom(300,5000))
             return axios.get(`https://wax.greymass.com/v1/history/get_transaction?id=${tx}`,{
-                timeout: 30000
+                timeout: 15000
             })
             .then(({data}) => data.traces[1].act.data.quantity.slice(0, -4))
             .catch((err2) => {
                 console.log("Fallback Greymass err")
-                console.log(err2.response)
-                return axios.get(`https://wax.blokcrafters.io/v2/history/get_transaction?id=${tx}`,{
-                    timeout: 30000
+                //console.log(err2.response)
+                return axios.get(`https://wax.eosrio.io/v2/history/get_transaction?id=${tx}`,{
+                    timeout: 15000
                 })
                 .then(({data}) => data.actions[1].act.data.amount)
                 .catch((err3) => {
                     console.log("3rd Fallback error")
-                    console.log(err3.response)
+                    //console.log(err3.response)
                     return axios.get(`/get_tx/${tx}`)
                     .then(({data}) => data.actions[1].act.data.amount)
                     .catch((err4) => {
