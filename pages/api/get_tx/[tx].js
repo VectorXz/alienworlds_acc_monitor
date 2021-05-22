@@ -1,5 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import axios from 'axios'
+import axios from '../AxiosAPI'
 import delay from 'delay'
 
 export default async (req, res) => {
@@ -13,7 +13,7 @@ export default async (req, res) => {
         return Math.random() * (max - min) + min;
     }
     await delay(getRandom(100,2000))
-    await axios.get(`https://wax.eosrio.io/v2/history/get_transaction?id=${tx}`
+    await axios.get(`https://wax.greymass.com/v1/history/get_transaction?id=${tx}`
     ).then((response) => {
         //console.log("TX RESP")
         //console.log(data)
@@ -23,7 +23,7 @@ export default async (req, res) => {
         console.log("EOSRIO ERR")
         console.log(err.response.status, err.response.statusText)
         await delay(getRandom(300,2000))
-        return axios.get(`https://wax.blokcrafters.io/v2/history/get_transaction?id=${tx}`)
+        return axios.get(`https://wax.cryptolions.io/v2/history/get_transaction?id=${tx}`)
         .then((response) => res.status(response.status).json(response.data))
         .catch((err2) => {
             console.log("Fallback blockcrafter err")

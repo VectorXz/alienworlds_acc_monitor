@@ -1,5 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import axios from 'axios'
+import axios from '../../AxiosAPI'
 import delay from 'delay'
 
 export default async (req, res) => {
