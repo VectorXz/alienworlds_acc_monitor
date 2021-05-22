@@ -175,8 +175,8 @@ export default function AccountInfo(props) {
     const fetchLastMineTx = async (tx) => {
         await delay(getRandom(300,5000))
         if(tx == "None") { return }
-        const lastMineTLM = await axios.get(`https://wax.eosrio.io/v2/history/get_transaction?id=${tx}`,{
-            timeout: 10000
+        const lastMineTLM = await axios.get(`https://wax.blokcrafters.io/v2/history/get_transaction?id=${tx}`,{
+            timeout: 15000
         }
         ).then(function({data}) {
             return data.actions[1].act.data.amount
@@ -190,14 +190,14 @@ export default function AccountInfo(props) {
             .then(({data}) => data.traces[1].act.data.quantity.slice(0, -4))
             .catch((err2) => {
                 console.log("Fallback Greymass err")
-                console.log(err2.response)
-                return axios.get(`https://wax.blokcrafters.io/v2/history/get_transaction?id=${tx}`,{
+                //console.log(err2.response)
+                return axios.get(`https://wax.eosrio.io/v2/history/get_transaction?id=${tx}`,{
                     timeout: 15000
                 })
                 .then(({data}) => data.actions[1].act.data.amount)
                 .catch((err3) => {
                     console.log("3rd Fallback error")
-                    console.log(err3.response)
+                    //console.log(err3.response)
                     return axios.get(`/get_tx/${tx}`)
                     .then(({data}) => data.actions[1].act.data.amount)
                     .catch((err4) => {
