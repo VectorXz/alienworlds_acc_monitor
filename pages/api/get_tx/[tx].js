@@ -21,7 +21,11 @@ export default async (req, res) => {
         return res.status(response.status).json(response.data)
     }).catch(async (err) => {
         console.log("EOSRIO ERR")
-        console.log(err.response.status, err.response.statusText)
+        if(err.response) {
+            console.log(err.response.status, err.response.statusText)
+        } else {
+            console.log(err)
+        }
         await delay(getRandom(300,2000))
         return axios.get(`https://wax.cryptolions.io/v2/history/get_transaction?id=${tx}`)
         .then((response) => res.status(response.status).json(response.data))
