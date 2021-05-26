@@ -20,3 +20,6 @@ a {
   box-sizing: border-box;
 }
 
+th, td {
+  @apply border border-gray-500 text-center p-2;
+}
