@@ -24,7 +24,7 @@ export default async (req, res) => {
         {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: name, upper_bound: name},
         { timeout: 15000 }
         ).then((response) => {
-            return response.status(200).json(response.data)
+            return res.status(200).json(response.data)
         }).catch((err) => {
             console.log("Error get last mine data")
             console.log(err)
