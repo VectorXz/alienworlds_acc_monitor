@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import AccountCards from '../components/AccountCards'
 import { useState, useEffect } from 'react'
 import Cookies from 'universal-cookie'
 import axios from 'axios'
@@ -176,7 +177,7 @@ export default function Home(props) {
           <span className="text-xl font-bold mr-3">Select Layout: </span>
           <ul className="flex">
             <li className="mr-3">
-              <Link href="/cards"><a className="inline-block border border-blue-500 rounded hover:border-blue-200 text-blue-500 hover:bg-blue-200 py-1 px-3 font-bold">Cards</a></Link>
+              <Link href="/cards"><a className="inline-block border border-blue-500 rounded py-1 px-3 bg-blue-500 text-white font-bold">Cards</a></Link>
             </li>
             <li className="mr-3">
             <Link href="/table"><a className="inline-block border border-blue-500 rounded hover:border-blue-200 text-blue-500 hover:bg-blue-200 py-1 px-3 font-bold">Table</a></Link>
@@ -186,6 +187,12 @@ export default function Home(props) {
         <div className="flex mt-2">
             <span className="text-red-500 font-bold">*Please wait for information to be loaded before changing layout*</span>
         </div>
+      </div>
+
+      <div className="flex flex-col rounded-md items-center justify-center p-6 my-3 w-full lg:w-5/6 bg-gray-700">
+        <span className="text-lg font-bold text-center my-1 text-indigo-300">Data will automatically refresh every 90 secs</span>
+        <span className="text-lg font-bold text-center my-1 text-indigo-300">Click at trash icon to delete account</span>
+        <AccountCards accounts={account} onDelete={handleDeleteAcc} onTotalChange={(newTotal) => { setTotal(newTotal) }} />
       </div>
     </div>
   )

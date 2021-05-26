@@ -169,20 +169,23 @@ export default function HomeTable(props) {
       <div className="flex flex-col rounded-md items-center justify-center p-6 my-3 w-full lg:w-5/6">
         <div className="text-center py-4 lg:px-4">
           <div className="p-2 px-4 bg-blue-800 items-center text-blue-100 leading-none lg:rounded-full flex lg:inline-flex" role="alert">
-            <span className="flex rounded-full bg-blue-500 uppercase px-2 py-1 text-xs font-bold mr-3">New</span>
+            <span className="flex rounded-full bg-blue-500 uppercase px-2 py-1 text-xs font-bold mr-3">New 27/5/2021</span>
             <span className="font-semibold mr-2 text-left flex-auto">Table Layout is now live! Try switch to "Table" below.</span>
           </div>
         </div>
         <div className="flex flex-row justify-center items-center">
-          <span className="text-xl font-bold mr-3">Layout: </span>
+          <span className="text-xl font-bold mr-3">Select Layout: </span>
           <ul className="flex">
             <li className="mr-3">
-              <Link href="/"><a className="inline-block border border-blue-500 rounded hover:border-blue-200 text-blue-500 hover:bg-blue-200 py-1 px-3 font-bold">Cards</a></Link>
+              <Link href="/cards"><a className="inline-block border border-blue-500 rounded hover:border-blue-200 text-blue-500 hover:bg-blue-200 py-1 px-3 font-bold">Cards</a></Link>
             </li>
             <li className="mr-3">
-            <Link href="#"><a className="inline-block border border-blue-500 rounded py-1 px-3 bg-blue-500 text-white font-bold">Table</a></Link>
+            <Link href="/table"><a className="inline-block border border-blue-500 rounded py-1 px-3 bg-blue-500 text-white font-bold">Table</a></Link>
             </li>
           </ul>
+        </div>
+        <div className="flex mt-2">
+            <span className="text-red-500 font-bold">*Please wait for information to be loaded before changing layout*</span>
         </div>
       </div>
 
