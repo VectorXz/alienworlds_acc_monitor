@@ -18,6 +18,11 @@ export default async (req, res) => {
     { timeout: 15000 }
     ).then((response) => {
         //console.log(data.rows[0]);
+        if(err.response) {
+            console.log(err.response.status, err.response.statusText)
+        } else {
+            console.log(err)
+        }
         return res.status(response.status).json(response.data)
     }).catch((err) => {
         return axios.post('https://api-wax.eosarabia.net/v1/chain/get_table_rows',

@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import AccountCards from '../components/AccountCards'
+import AccountTable from '../components/AccountTable'
 import { useState, useEffect } from 'react'
 import Cookies from 'universal-cookie'
 import axios from 'axios'
@@ -8,7 +8,7 @@ import btoa from 'btoa'
 import atob from 'atob'
 import Link from 'next/link'
 
-export default function Home(props) {
+export default function HomeTable(props) {
 
   const cookies = new Cookies();
 
@@ -66,8 +66,8 @@ export default function Home(props) {
   }
 
   useEffect(() => {
-    console.log("Account Changed!")
-    console.log(account)
+    //console.log("Account Changed!")
+    //console.log(account)
     cookies.set("accounts", account, cookieOptions)
     setLink('https://www.alienworlds.fun/?accounts='+btoa(JSON.stringify(account)))
   }, [account])
@@ -169,7 +169,7 @@ export default function Home(props) {
       <div className="flex flex-col rounded-md items-center justify-center p-6 my-3 w-full lg:w-5/6">
         <div className="text-center py-4 lg:px-4">
           <div className="p-2 px-4 bg-blue-800 items-center text-blue-100 leading-none lg:rounded-full flex lg:inline-flex" role="alert">
-            <span className="flex rounded-full bg-blue-500 uppercase px-2 py-1 text-xs font-bold mr-3">New 27/5/2021</span>
+            <span className="flex rounded-full bg-blue-500 uppercase px-2 py-1 text-xs font-bold mr-3">New</span>
             <span className="font-semibold mr-2 text-left flex-auto">Table Layout is now live! Try switch to "Table" below.</span>
           </div>
         </div>
@@ -177,10 +177,10 @@ export default function Home(props) {
           <span className="text-xl font-bold mr-3">Layout: </span>
           <ul className="flex">
             <li className="mr-3">
-              <Link href="#"><a className="inline-block border border-blue-500 rounded py-1 px-3 bg-blue-500 text-white font-bold">Cards</a></Link>
+              <Link href="/"><a className="inline-block border border-blue-500 rounded hover:border-blue-200 text-blue-500 hover:bg-blue-200 py-1 px-3 font-bold">Cards</a></Link>
             </li>
             <li className="mr-3">
-            <Link href="/table"><a className="inline-block border border-blue-500 rounded hover:border-blue-200 text-blue-500 hover:bg-blue-200 py-1 px-3 font-bold">Table</a></Link>
+            <Link href="#"><a className="inline-block border border-blue-500 rounded py-1 px-3 bg-blue-500 text-white font-bold">Table</a></Link>
             </li>
           </ul>
         </div>
@@ -189,7 +189,8 @@ export default function Home(props) {
       <div className="flex flex-col rounded-md items-center justify-center p-6 my-3 w-full lg:w-5/6 bg-gray-700">
         <span className="text-lg font-bold text-center my-1 text-indigo-300">Data will automatically refresh every 90 secs</span>
         <span className="text-lg font-bold text-center my-1 text-indigo-300">Click at trash icon to delete account</span>
-        <AccountCards accounts={account} onDelete={handleDeleteAcc} onTotalChange={(newTotal) => { setTotal(newTotal) }} />
+        <span className="visible xl:invisible">If you're using mobile, you may need to scroll along the table.</span>
+        <AccountTable accounts={account} onDelete={handleDeleteAcc} onTotalChange={(newTotal) => { setTotal(newTotal) }} />
       </div>
     </div>
   )
