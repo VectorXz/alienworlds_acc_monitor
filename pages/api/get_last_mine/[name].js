@@ -18,11 +18,6 @@ export default async (req, res) => {
     { timeout: 15000 }
     ).then((response) => {
         //console.log(data.rows[0]);
-        if(err.response) {
-            console.log(err.response.status, err.response.statusText)
-        } else {
-            console.log(err)
-        }
         return res.status(response.status).json(response.data)
     }).catch((err) => {
         return axios.post('https://api-wax.eosarabia.net/v1/chain/get_table_rows',
@@ -33,7 +28,11 @@ export default async (req, res) => {
         }).catch((err) => {
             console.log("Error get last mine data")
             console.log(err)
-            return res.status(err.response.status).json(err.response.data)
+            if(err.response) {
+                return res.status(err.response.status).json(err.response.data)
+            } else {
+                return res.status(500)
+            }
         })
     })
     // await axios.post('https://wax.pink.gg/v1/chain/get_account',
