@@ -28,11 +28,7 @@ export default async (req, res) => {
         }).catch((err) => {
             console.log("Error get last mine data")
             console.log(err)
-            if(err.response) {
-                return res.status(err.response.status).json(err.response.data)
-            } else {
-                return res.status(500)
-            }
+            return res.status(500)
         })
     })
     // await axios.post('https://wax.pink.gg/v1/chain/get_account',
