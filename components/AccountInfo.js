@@ -27,7 +27,7 @@ export default function AccountInfo(props) {
 
     const fetchAccountData = async (user) => {
         await delay(getRandom(100, 2000))
-        return axios.get(`https://wax.blokcrafters.io/v2/state/get_account?account=${user}`, {
+        return axios.get(`https://cors-anywhere.herokuapp.com/https://wax.blokcrafters.io/v2/state/get_account?account=${user}`, {
             timeout: 15000
         })
         .then((resp) => {
@@ -55,7 +55,7 @@ export default function AccountInfo(props) {
         .catch(async (err) => {
             console.log(err)
             if(err.response && err.response.status === 500 && err.response.data.message.includes("not found")) return
-            return axios.get(`https://wax.cryptolions.io/v2/state/get_account?account=${user}`, {
+            return axios.get(`https://cors-anywhere.herokuapp.com/https://wax.cryptolions.io/v2/state/get_account?account=${user}`, {
                 timeout: 15000
             })
             .then((resp) => {
@@ -88,7 +88,7 @@ export default function AccountInfo(props) {
 
     const getMinerName = async (user) => {
         await delay(getRandom(300,5000))
-        const minerName = await axios.post('https://wax.pink.gg/v1/chain/get_table_rows',
+        const minerName = await axios.post('https://cors-anywhere.herokuapp.com/https://wax.pink.gg/v1/chain/get_table_rows',
         {json: true, code: "federation", scope: "federation", table: 'players', lower_bound: user, upper_bound: user},
         {
             timeout: 15000
@@ -116,7 +116,7 @@ export default function AccountInfo(props) {
 
     const getLastMineInfo = async (user) => {
         await delay(getRandom(300,5000))
-        const lastMineData = await axios.post('https://wax.eosn.io/v1/chain/get_table_rows',
+        const lastMineData = await axios.post('https://cors-anywhere.herokuapp.com/https://wax.eosn.io/v1/chain/get_table_rows',
         {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: user, upper_bound: user},
         {
             timeout: 15000
@@ -134,7 +134,7 @@ export default function AccountInfo(props) {
                 currentLand: data.rows[0].current_land
             }
         }).catch((err) => {
-            return axios.post('https://wax.eosphere.io/v1/chain/get_table_rows',
+            return axios.post('https://cors-anywhere.herokuapp.com/https://wax.eosphere.io/v1/chain/get_table_rows',
             {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: user, upper_bound: user},
             {
                 timeout: 15000
@@ -178,7 +178,7 @@ export default function AccountInfo(props) {
     const fetchLastMineTx = async (tx) => {
         await delay(getRandom(300,5000))
         if(tx == "None") { return }
-        const lastMineTLM = await axios.get(`https://wax.blokcrafters.io/v2/history/get_transaction?id=${tx}`,{
+        const lastMineTLM = await axios.get(`https://cors-anywhere.herokuapp.com/https://wax.blokcrafters.io/v2/history/get_transaction?id=${tx}`,{
             timeout: 15000
         }
         ).then(function({data}) {
@@ -187,7 +187,7 @@ export default function AccountInfo(props) {
             //console.log("EOSRIO ERR")
             //console.log(err.message)
             await delay(getRandom(300,5000))
-            return axios.get(`https://wax.greymass.com/v1/history/get_transaction?id=${tx}`,{
+            return axios.get(`https://cors-anywhere.herokuapp.com/https://wax.greymass.com/v1/history/get_transaction?id=${tx}`,{
                 timeout: 15000
             })
             .then(({data}) => data.traces[1].act.data.quantity.slice(0, -4))
