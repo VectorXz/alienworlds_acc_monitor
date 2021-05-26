@@ -17,6 +17,10 @@ export default function Home(props) {
     expires: DateTime.now().plus({ months: 6}).toJSDate()
   }
 
+  if(props.urlAcc && !cookies.get("accounts")) {
+    cookies.set("accounts", props.urlAcc, cookieOptions)
+  }
+
   const defaultAcc = props.urlAcc ? props.urlAcc : cookies.get("accounts") ? cookies.get("accounts") : []
   const [account, setAccount] = useState(defaultAcc)
   const [input, setInput] = useState("")
@@ -62,8 +66,8 @@ export default function Home(props) {
   }
 
   useEffect(() => {
-    //console.log("Account Changed!")
-    //console.log(account)
+    console.log("Account Changed!")
+    console.log(account)
     cookies.set("accounts", account, cookieOptions)
     setLink('https://www.alienworlds.fun/?accounts='+btoa(JSON.stringify(account)))
   }, [account])

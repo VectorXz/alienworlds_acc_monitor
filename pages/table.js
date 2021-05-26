@@ -8,13 +8,17 @@ import btoa from 'btoa'
 import atob from 'atob'
 import Link from 'next/link'
 
-export default function Home(props) {
+export default function HomeTable(props) {
 
   const cookies = new Cookies();
 
   const cookieOptions = {
     secure: true,
     expires: DateTime.now().plus({ months: 6}).toJSDate()
+  }
+
+  if(props.urlAcc && !cookies.get("accounts")) {
+    cookies.set("accounts", props.urlAcc, cookieOptions)
   }
 
   const defaultAcc = props.urlAcc ? props.urlAcc : cookies.get("accounts") ? cookies.get("accounts") : []
