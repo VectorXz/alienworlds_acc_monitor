@@ -103,32 +103,25 @@ export default function Home(props) {
   }, [account])
 
   useEffect(async () => {
-    let lastPrice = 0
+    let lastTLMPrice = 0
+    let lastWaxPrice = 0
     const now = DateTime.now().setZone("local")
     const nextUpdate = TLMPrice.update != "None" ? DateTime.fromRFC2822(TLMPrice.update).plus({ seconds: 30}) : now
     if (nextUpdate <= now) {
-      lastPrice = await fetchWAXPrice()
-      const newWaxPrice = {
-        market_price: lastPrice,
-        update: DateTime.now().setZone('local').toRFC2822()
-      }
-      setWAXPrice(newWaxPrice)
-    }
-  }, [totalWax, totalStaked])
-
-  useEffect(async () => {
-    let lastPrice = 0
-    const now = DateTime.now().setZone("local")
-    const nextUpdate = TLMPrice.update != "None" ? DateTime.fromRFC2822(TLMPrice.update).plus({ seconds: 30}) : now
-    if (nextUpdate <= now) {
-      lastPrice = await fetchTLMPrice()
+      lastTLMPrice = await fetchTLMPrice()
       const newTLMPrice = {
-        market_price: lastPrice,
+        market_price: lastTLMPrice,
         update: DateTime.now().setZone("local").toRFC2822()
       }
       setTLMPrice(newTLMPrice)
+      lastWaxPrice = await fetchWAXPrice()
+      const newWaxPrice = {
+        market_price: lastWaxPrice,
+        update: DateTime.now().setZone("local").toRFC2822()
+      }
+      setWAXPrice(newWaxPrice)
     }
-  }, [totalTLM])
+  }, [totalTLM, totalWax, totalStaked])
 
   return (
     <div className="flex flex-col min-h-screen items-center justify-center mt-10 px-2 lg:px-0">
