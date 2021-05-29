@@ -1,8 +1,8 @@
-import AccountRow from './AccountRow';
+import AccountInfo from './AccountInfo';
 import { useState, useEffect } from 'react';
 import http from './Axios';
 
-export default function AccountTable(props) {
+export default function AccountCard(props) {
     const { accounts, onDelete, onTotalTLMChange, onTotalWaxChange, onTotalStakedChange } = props
 
     const initTLM = []
@@ -95,36 +95,17 @@ export default function AccountTable(props) {
     }, [wax])
 
     return (
-        <div className="flex flex-col w-full overflow-auto">
-            <table className="table-auto border border-gray-500 border-collapse mt-5">
-                <thead>
-                    <tr className="bg-gray-800">
-                        <th className="w-min">Remove</th>
-                        <th>#</th>
-                        <th>Miner</th>
-                        <th>Wallet</th>
-                        <th className="w-4/12">CPU</th>
-                        <th>Stake</th>
-                        <th>TLM</th>
-                        <th>WAX</th>
-                        <th>Last mine</th>
-                        <th className="w-1/12">Last update</th>
-                        <th>NFT</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {accounts.length > 0 && accounts.map((acc, i) => {
-                    return (
-                            <AccountRow key={i} index={i} account={acc} axios={http}
-                            onDelete={() => onAccDelete(i, acc)}
-                            onTLMChange={(amt) => onTLMChange(i, amt)}
-                            onWaxChange={(amt) => onWaxChange(i, amt)}
-                            onStakedChange={(amt) => onStakedChange(i, amt)} />
-                        )
-                    })}
-                </tbody>
-            </table>
+        <div className="flex flex-col w-full">
             {accounts.length === 0 && <span className="text-3xl font-bold text-center text-red-400">No accounts added yet!</span>}
+            {accounts.length > 0 && accounts.map((acc, i) => {
+                return (
+                    <AccountInfo key={i} index={i} account={acc} axios={http}
+                    onDelete={() => onAccDelete(i, acc)}
+                    onTLMChange={(amt) => onTLMChange(i, amt)}
+                    onWaxChange={(amt) => onWaxChange(i, amt)}
+                    onStakedChange={(amt) => onStakedChange(i, amt)} />
+                )
+            })}
         </div>
     )
 }

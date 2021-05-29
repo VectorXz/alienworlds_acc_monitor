@@ -5,8 +5,9 @@ import axios from 'axios'
 import { DateTime } from 'luxon'
 import btoa from 'btoa'
 import atob from 'atob'
-import AccountCards from '../components/AccountCards'
+import AccountCard from '../components/AccountCard'
 import AccountTable from '../components/AccountTable'
+import TotalBalanceCard from '../components/TotalBalanceCard'
 
 export default function Home(props) {
 
@@ -27,10 +28,15 @@ export default function Home(props) {
   const genLink = props.urlAcc ? 'https://www.alienworlds.fun/?accounts='+btoa(JSON.stringify(props.urlAcc)) : cookies.get("accounts") ? 'https://www.alienworlds.fun/?accounts='+btoa(JSON.stringify(cookies.get("accounts"))) : "Please add some accounts first!"
   const [link, setLink] = useState(genLink)
   const [copied, setCopied] = useState(false)
-  const [total, setTotal] = useState(0)
-  const [totalUSD, setTotalUSD] = useState({
+  const [totalTLM, setTotalTLM] = useState(0)
+  const [totalWax, setTotalWax] = useState(0)
+  const [totalStaked, setTotalStaked] = useState(0)
+  const [TLMPrice, setTLMPrice] = useState({
     market_price: 0,
-    totalUSD: 0,
+    update: "None"
+  })
+  const [WAXPrice, setWAXPrice] = useState({
+    market_price: 0,
     update: "None"
   })
   const [layout, setLayout] = useState("")
@@ -53,17 +59,40 @@ export default function Home(props) {
   }
 
   const fetchTLMPrice = async () => {
-    const lastPrice = await axios.get('https://api.binance.com/api/v3/avgPrice?symbol=TLMUSDT')
+    return axios.get('https://api.binance.com/api/v3/avgPrice?symbol=TLMUSDT')
     .then(({data}) => {
-      //console.log(data.price)
       return data.price
     })
     .catch((err) => {
-      console.log("ERROR: cannot get market price")
+      console.log("ERROR: cannot get TLM market price")
       console.log(err)
       return 0
     })
-    return lastPrice
+  }
+
+  const fetchWAXPrice = async () => {
+    return axios.get('https://api.huobi.pro/market/detail?symbol=waxpusdt')
+    .then(({data}) => {
+      return data.tick.close
+    })
+    .catch((err) => {
+      console.log("ERROR: cannot get WAX market price")
+      console.log(err)
+      return 0
+    })
+  }
+
+  const handleDeleteAcc = (acc) => {
+    console.log("Delete account ",acc)
+    let newAcc = [...account].filter((arr) => arr != acc)
+    setAccount(newAcc)
+  }
+
+  const handleDeleteCookies = () => {
+    cookies.remove("accounts")
+    setAccount([])
+    setInput("")
+    setTotalTLM(0)
   }
 
   useEffect(() => {
@@ -74,42 +103,32 @@ export default function Home(props) {
   }, [account])
 
   useEffect(async () => {
-    //console.log("total "+total)
     let lastPrice = 0
     const now = DateTime.now().setZone("local")
-    const nextUpdate = totalUSD.update != "None" ? DateTime.fromRFC2822(totalUSD.update).plus({ seconds: 30}) : now
-    // console.log(now.toHTTP())
-    // console.log(nextUpdate.toHTTP())
+    const nextUpdate = TLMPrice.update != "None" ? DateTime.fromRFC2822(TLMPrice.update).plus({ seconds: 30}) : now
+    if (nextUpdate <= now) {
+      lastPrice = await fetchWAXPrice()
+      const newWaxPrice = {
+        market_price: lastPrice,
+        update: DateTime.now().setZone('local').toRFC2822()
+      }
+      setWAXPrice(newWaxPrice)
+    }
+  }, [totalWax, totalStaked])
+
+  useEffect(async () => {
+    let lastPrice = 0
+    const now = DateTime.now().setZone("local")
+    const nextUpdate = TLMPrice.update != "None" ? DateTime.fromRFC2822(TLMPrice.update).plus({ seconds: 30}) : now
     if (nextUpdate <= now) {
       lastPrice = await fetchTLMPrice()
-      const newTotalUSD = {
+      const newTLMPrice = {
         market_price: lastPrice,
-        totalUSD: total * lastPrice,
         update: DateTime.now().setZone("local").toRFC2822()
       }
-      setTotalUSD(newTotalUSD)
-      //console.log("Price updated at "+DateTime.now().setZone("local").toRFC2822())
-    } else {
-      const newTotalUSD = {
-        ...totalUSD,
-        totalUSD: total * totalUSD.market_price
-      }
-      setTotalUSD(newTotalUSD)
-      //console.log("Total updated at "+DateTime.now().setZone("local").toRFC2822())
+      setTLMPrice(newTLMPrice)
     }
-  }, [total])
-
-  const handleDeleteAcc = (acc) => {
-    let newAcc = [...account].filter((arr) => arr != acc)
-    setAccount(newAcc)
-  }
-
-  const handleDeleteCookies = () => {
-    cookies.remove("accounts")
-    setAccount([])
-    setInput("")
-    setTotal(0)
-  }
+  }, [totalTLM])
 
   return (
     <div className="flex flex-col min-h-screen items-center justify-center mt-10 px-2 lg:px-0">
@@ -120,7 +139,7 @@ export default function Home(props) {
 
       <main className="flex flex-col w-full lg:w-3/6">
         <div className="flex flex-col">
-          <span className="text-5xl font-bold mb-3 text-center">AW Wax Account Monitor <span className="text-sm text-blue-400">v1.3</span></span>
+          <span className="text-5xl font-bold mb-3 text-center">AW Wax Account Monitor <span className="text-sm text-blue-400">v2</span></span>
           <div className="mx-2 px-2 font-bold text-green-600 bg-green-200 rounded-md text-center w-auto self-center">
             <span className="text-center text-sm">Like this website? You can donate us by sending WAX to 1crtk.wam</span>
           </div>
@@ -157,12 +176,6 @@ export default function Home(props) {
                 {copied && <div><span className="font-bold text-sm mt-3">Copied to clipboard!</span></div>}
               </div>
             }
-            <div className="flex flex-col items-center mt-3">
-              <span className="text-3xl font-bold text-green-400 text-center">Total TLM: {total.toFixed(4)}</span>
-              <span className="text-md font-bold text-blue-400 text-center">Binance TLM Price(avg. 5min): {totalUSD.market_price} USDT</span>
-              <span className="text-xs font-bold text-blue-400 text-center">Last update price: {totalUSD.update}</span>
-              <span className="text-3xl font-bold text-green-400 text-center">Total USDT: {totalUSD.totalUSD.toFixed(2)}</span>
-            </div>
           </div>
         </div>
       </main>
@@ -189,7 +202,7 @@ hover:bg-blue-200 py-1 px-3 font-bold ${layout==='Table' ? 'bg-blue-500 text-whi
             </li>
           </ul>
         </div>
-        <div className="flex mt-2">
+        <div className="flex mt-2 text-center">
             <span className="text-red-500 font-bold">*Please wait for information to be loaded before changing layout*</span>
         </div>
       </div>
@@ -197,7 +210,7 @@ hover:bg-blue-200 py-1 px-3 font-bold ${layout==='Table' ? 'bg-blue-500 text-whi
       {layout != 'Cards' && layout != 'Table' && <>
         <div className="flex flex-col items-center">
           <h1 className="text-3xl font-bold">Loaded {account.length} accounts</h1>
-          <div className="grid grid-cols-6 gap-5 mt-3">
+          <div className="grid grid-cols-2 lg:grid-cols-6 gap-5 mt-3">
             {account.map((acc) => {
               return (
                 <div className="p-3 px-5 text-center bg-gray-600 rounded-md">
@@ -209,18 +222,32 @@ hover:bg-blue-200 py-1 px-3 font-bold ${layout==='Table' ? 'bg-blue-500 text-whi
         </div>
       </>}
       {layout === 'Cards' && <>
+        <TotalBalanceCard totalTLM={totalTLM} totalWax={totalWax} totalStaked={totalStaked}
+        TLMPrice={TLMPrice} WAXPrice={WAXPrice} />
         <div className="flex flex-col rounded-md items-center justify-center p-6 my-3 w-full lg:w-5/6 bg-gray-700">
           <span className="text-lg font-bold text-center my-1 text-indigo-300">Data will automatically refresh every 90 secs</span>
           <span className="text-lg font-bold text-center my-1 text-indigo-300">Click at trash icon to delete account</span>
-          <AccountCards accounts={account} onDelete={handleDeleteAcc} onTotalChange={(newTotal) => { setTotal(newTotal) }} />
+          <AccountCard accounts={account}
+          onDelete={handleDeleteAcc}
+          onTotalTLMChange={(newTotal) => { setTotalTLM(newTotal) }}
+          onTotalWaxChange={(newTotal) => { setTotalWax(newTotal) }}
+          onTotalStakedChange={(newTotal) => { setTotalStaked(newTotal) }}
+          />
         </div>
       </>}
       {layout === 'Table' && <>
+        <TotalBalanceCard totalTLM={totalTLM} totalWax={totalWax} totalStaked={totalStaked}
+          TLMPrice={TLMPrice} WAXPrice={WAXPrice} />
         <div className="flex flex-col rounded-md items-center justify-center p-6 my-3 w-full lg:w-5/6 bg-gray-700">
           <span className="text-lg font-bold text-center my-1 text-indigo-300">Data will automatically refresh every 90 secs</span>
           <span className="text-lg font-bold text-center my-1 text-indigo-300">Click at trash icon to delete account</span>
           <span className="visible xl:invisible">If you're using mobile, you may need to scroll along the table.</span>
-          <AccountTable accounts={account} onDelete={handleDeleteAcc} onTotalChange={(newTotal) => { setTotal(newTotal) }} />
+          <AccountTable accounts={account}
+          onDelete={handleDeleteAcc}
+          onTotalTLMChange={(newTotal) => { setTotalTLM(newTotal) }}
+          onTotalWaxChange={(newTotal) => { setTotalWax(newTotal) }}
+          onTotalStakedChange={(newTotal) => { setTotalStaked(newTotal) }}
+          />
         </div>
       </>}
     </div>

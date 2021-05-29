@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 const { DateTime } = require("luxon");
 import delay from 'delay'
 
-export default function AccountInfo(props) {
-    const { account, onDelete, onBalChange, index, axios } = props
+export default function AccountRow(props) {
+    const { index, account, axios, onDelete, onTLMChange, onWaxChange, onStakedChange } = props
 
     const [acc, setAcc] = useState(account)
     const [loading, setLoading] = useState(true)
@@ -247,10 +247,17 @@ export default function AccountInfo(props) {
     }, [loading])
 
     useEffect(() => {
-        //console.log("Balance changed")
-        //console.log(balance)
-        onBalChange(balance)
+        onTLMChange(balance)
     }, [balance])
+
+    useEffect(() => {
+        onWaxChange(wax)
+    }, [wax])
+    useEffect(() => {
+        if(accInfo.cpu_weight) {
+            onStakedChange(accInfo.cpu_weight.slice(0, -4))
+        }
+    }, [accInfo.cpu_weight])
 
     useEffect(() => {
         const interval = setInterval(async () => {
