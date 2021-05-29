@@ -5,7 +5,8 @@ import axios from 'axios'
 import { DateTime } from 'luxon'
 import btoa from 'btoa'
 import atob from 'atob'
-import Link from 'next/link'
+import AccountCards from '../components/AccountCards'
+import AccountTable from '../components/AccountTable'
 
 export default function Home(props) {
 
@@ -32,6 +33,7 @@ export default function Home(props) {
     totalUSD: 0,
     update: "None"
   })
+  const [layout, setLayout] = useState("")
 
   const handleAddAcc = (e) => {
     e.preventDefault()
@@ -176,10 +178,14 @@ export default function Home(props) {
           <span className="text-xl font-bold mr-3">Select Layout: </span>
           <ul className="flex">
             <li className="mr-3">
-              <Link href="/cards"><a className="inline-block border border-blue-500 rounded hover:border-blue-200 text-blue-500 hover:bg-blue-200 py-1 px-3 font-bold">Cards</a></Link>
+              <a className={`cursor-pointer inline-block border border-blue-500 rounded hover:border-blue-20
+hover:bg-blue-200 py-1 px-3 font-bold ${layout==='Cards' ? 'bg-blue-500 text-white' : 'text-blue-500'}`}
+              onClick={() => setLayout("Cards")}>Cards</a>
             </li>
             <li className="mr-3">
-            <Link href="/table"><a className="inline-block border border-blue-500 rounded hover:border-blue-200 text-blue-500 hover:bg-blue-200 py-1 px-3 font-bold">Table</a></Link>
+              <a className={`cursor-pointer inline-block border border-blue-500 rounded hover:border-blue-20
+hover:bg-blue-200 py-1 px-3 font-bold ${layout==='Table' ? 'bg-blue-500 text-white' : 'text-blue-500'}`}
+              onClick={() => setLayout("Table")}>Table</a>
             </li>
           </ul>
         </div>
@@ -187,6 +193,36 @@ export default function Home(props) {
             <span className="text-red-500 font-bold">*Please wait for information to be loaded before changing layout*</span>
         </div>
       </div>
+
+      {layout != 'Cards' && layout != 'Table' && <>
+        <div className="flex flex-col items-center">
+          <h1 className="text-3xl font-bold">Loaded {account.length} accounts</h1>
+          <div className="grid grid-cols-6 gap-5 mt-3">
+            {account.map((acc) => {
+              return (
+                <div className="p-3 px-5 text-center bg-gray-600 rounded-md">
+                  <h1>{acc}</h1>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      </>}
+      {layout === 'Cards' && <>
+        <div className="flex flex-col rounded-md items-center justify-center p-6 my-3 w-full lg:w-5/6 bg-gray-700">
+          <span className="text-lg font-bold text-center my-1 text-indigo-300">Data will automatically refresh every 90 secs</span>
+          <span className="text-lg font-bold text-center my-1 text-indigo-300">Click at trash icon to delete account</span>
+          <AccountCards accounts={account} onDelete={handleDeleteAcc} onTotalChange={(newTotal) => { setTotal(newTotal) }} />
+        </div>
+      </>}
+      {layout === 'Table' && <>
+        <div className="flex flex-col rounded-md items-center justify-center p-6 my-3 w-full lg:w-5/6 bg-gray-700">
+          <span className="text-lg font-bold text-center my-1 text-indigo-300">Data will automatically refresh every 90 secs</span>
+          <span className="text-lg font-bold text-center my-1 text-indigo-300">Click at trash icon to delete account</span>
+          <span className="visible xl:invisible">If you're using mobile, you may need to scroll along the table.</span>
+          <AccountTable accounts={account} onDelete={handleDeleteAcc} onTotalChange={(newTotal) => { setTotal(newTotal) }} />
+        </div>
+      </>}
     </div>
   )
 }
