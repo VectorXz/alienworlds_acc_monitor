@@ -20,6 +20,7 @@ export default function AccountInfo(props) {
     })
     const [history, setHistory] = useState([])
     const [minerName, setMinerName] = useState("Loading")
+    const [nft, setNft] = useState(false)
 
     function getRandom(min, max) {
         return Math.random() * (max - min) + min;
@@ -226,8 +227,37 @@ export default function AccountInfo(props) {
         }
     }
 
+    const checkNFT = async (user) => {
+        await delay(getRandom(300,5000))
+        await axios.post('https://wax.eosn.io/v1/chain/get_table_rows',
+        {json: true, code: "m.federation", scope: "m.federation", table: 'claims', lower_bound: user, upper_bound: user},
+        {
+            timeout: 15000
+        }
+        ).then(function({data}) {
+            if(data.rows.length > 0) {
+                return setNft(true)
+            }
+        }).catch((err) => {
+            return axios.post('https://wax.eosphere.io/v1/chain/get_table_rows',
+            {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: user, upper_bound: user},
+            {
+                timeout: 15000
+            }
+            )
+            .then(({data}) => {
+                if(data.rows.length > 0) {
+                    return setNft(true)
+                }
+            }).catch((err) => {
+                console.log("Cannot check NFTs")
+            })
+        })
+    }
+
     useEffect(async () => {
         await getMinerName(acc)
+        await checkNFT(acc)
     }, [acc])
 
     useEffect(async () => {
@@ -264,6 +294,13 @@ export default function AccountInfo(props) {
             //console.log("It's time to checking!")
             setLoading(true)
         }, 90000);
+        return () => clearInterval(interval);
+    }, []);
+
+    useEffect(() => {
+        const interval = setInterval(async () => {
+            await checkNFT(acc)
+        }, 3600000);
         return () => clearInterval(interval);
     }, []);
 
@@ -319,6 +356,7 @@ export default function AccountInfo(props) {
                     <span className="text-xs">Next update: {DateTime.fromRFC2822(update).plus({ minutes: 1, seconds: 30}).toRFC2822()}</span>
                 </div>
                 <div className="flex flex-row lg:flex-col flex-wrap lg:flex-nowrap gap-y-2 mt-2 lg:mt-0 lg:gap-y-0.5">
+                    {nft && <span className="font-bold text-xs self-end">NFT Claimable!</span>}
                     <span className="text-sm font-bold self-end">Last TLM mined ({lastMine.last_mine}):</span>
                     <span className="text-xs my-2 self-end">{history.map((hist, i) => {
                         return (

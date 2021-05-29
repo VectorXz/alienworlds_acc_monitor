@@ -21,6 +21,7 @@ export default function AccountRow(props) {
     const [history, setHistory] = useState([])
     const [minerName, setMinerName] = useState("Loading")
     const [expanded, setExpanded] = useState(false)
+    const [nft, setNft] = useState(false)
 
     function getRandom(min, max) {
         return Math.random() * (max - min) + min;
@@ -227,8 +228,37 @@ export default function AccountRow(props) {
         }
     }
 
+    const checkNFT = async (user) => {
+        await delay(getRandom(300,5000))
+        await axios.post('https://wax.eosn.io/v1/chain/get_table_rows',
+        {json: true, code: "m.federation", scope: "m.federation", table: 'claims', lower_bound: user, upper_bound: user},
+        {
+            timeout: 15000
+        }
+        ).then(function({data}) {
+            if(data.rows.length > 0) {
+                return setNft(true)
+            }
+        }).catch((err) => {
+            return axios.post('https://wax.eosphere.io/v1/chain/get_table_rows',
+            {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: user, upper_bound: user},
+            {
+                timeout: 15000
+            }
+            )
+            .then(({data}) => {
+                if(data.rows.length > 0) {
+                    return setNft(true)
+                }
+            }).catch((err) => {
+                console.log("Cannot check NFTs")
+            })
+        })
+    }
+
     useEffect(async () => {
         await getMinerName(acc)
+        await checkNFT(acc)
     }, [acc])
 
     useEffect(async () => {
@@ -264,6 +294,13 @@ export default function AccountRow(props) {
             //console.log("It's time to checking!")
             setLoading(true)
         }, 90000);
+        return () => clearInterval(interval);
+    }, []);
+
+    useEffect(() => {
+        const interval = setInterval(async () => {
+            await checkNFT(acc)
+        }, 3600000);
         return () => clearInterval(interval);
     }, []);
 
@@ -305,7 +342,11 @@ export default function AccountRow(props) {
                 <td>{accInfo.cpu_weight}</td>
                 <td>{balance} TLM</td>
                 <td>{wax} WAX</td>
-                <td>{lastMine.last_mine}</td>
+                <td>{lastMine.last_mine}<br/>{history[0] ? 
+                                <span
+                                className={'inline-flex items-center justify-center px-2 py-1 mr-2 text-xs font-bold leading-none text-black rounded-full bg-green-600'}>
+                                {history[0].amount}
+                                </span> : ''}</td>
                 <td className="text-xs">{update}</td>
                 <td>
                 <a 
@@ -313,6 +354,8 @@ export default function AccountRow(props) {
                 duration-150 bg-green-600 rounded-lg focus:shadow-outline hover:bg-green-800" 
                 href={'https://wax.atomichub.io/explorer/account/'+acc}
                 rel="noopener noreferrer" target="_blank">NFT</a>
+                <br />
+                {nft && <span className="font-bold text-xs">Claimable!</span>}
                 </td>
             </tr>
             {/* {expanded && <>
