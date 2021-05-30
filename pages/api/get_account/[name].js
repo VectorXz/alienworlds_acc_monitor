@@ -14,8 +14,11 @@ export default async (req, res) => {
     }
     const mockIp = `${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}`
     await delay(getRandom(100,2000))
-    await axios.get(`https://wax.blokcrafters.io/v2/state/get_account?account=${name}`, {
-        timeout: 15000
+    await axios.get(`https://api-wax.eosarabia.net/v2/state/get_account?account=${name}`, {
+        headers: {
+            'X-Forwarded-For': mockIp
+        },
+        timeout: 30000
     })
     .then((resp) => {
         if(resp.status == 200) {
@@ -25,19 +28,21 @@ export default async (req, res) => {
     .catch(async (err) => {
         if(err.response && err.response.status === 500 && err.response.data && err.response.data.message.includes("not found")) return
         return axios.get(`https://wax.cryptolions.io/v2/state/get_account?account=${name}`, {
-            timeout: 15000
+            headers: {
+                'X-Forwarded-For': mockIp
+            },
+            timeout: 30000
         })
         .then((resp) => {
             if(resp.status == 200) {
                 return res.status(resp.status).json(resp.data)
             }
         }).catch(async () => {
-            
             return axios.get(`https://wax.eosrio.io/v2/state/get_account?account=${name}`, {
                 headers: {
                     'X-Forwarded-For': mockIp
                 },
-                timeout: 20000
+                timeout: 30000
             })
             .then((resp) => {
                 if(resp.status == 200) {
@@ -45,15 +50,14 @@ export default async (req, res) => {
                     return res.status(resp.status).json(resp.data)
                 }
             }).catch(async () => {
-                return axios.get(`https://wax.cryptolions.io/v2/state/get_account?account=${name}`, {
+                return axios.get(`https://wax.eosphere.io/v2/state/get_account?account=${name}`, {
                     headers: {
                         'X-Forwarded-For': mockIp
                     },
-                    timeout: 60000
+                    timeout: 30000
                 })
                 .then((resp) => {
                     if(resp.status == 200) {
-                        
                         return res.status(resp.status).json(resp.data)
                     }
                 }).catch((err2) => {

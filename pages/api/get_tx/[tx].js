@@ -14,15 +14,26 @@ export default async (req, res) => {
     }
     const mockIp = `${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}`
     await delay(getRandom(100,2000))
-    await axios.get(`https://wax.blokcrafters.io/v2/history/get_transaction?id=${tx}`
+    await axios.get(`https://apiwax.3dkrender.com/v2/history/get_transaction?id=${tx}`,
+    {
+        headers: {
+            'X-Forwarded-For': mockIp
+        },
+        timeout: 60000
+    }
     ).then((response) => {
         return res.status(response.status).json(response.data)
     }).catch(async () => {
-        return axios.get(`https://wax.cryptolions.io/v2/history/get_transaction?id=${tx}`)
+        return axios.get(`https://api-wax.eosarabia.net/v2/history/get_transaction?id=${tx}`,
+        {
+            headers: {
+                'X-Forwarded-For': mockIp
+            },
+            timeout: 60000
+        })
         .then((response) => res.status(response.status).json(response.data))
         .catch(async () => {
-            
-            return axios.get(`https://wax.cryptolions.io/v2/history/get_transaction?id=${tx}`,
+            return axios.get(`https://api.wax.alohaeos.com/v2/history/get_transaction?id=${tx}`,
             {
                 headers: {
                     'X-Forwarded-For': mockIp

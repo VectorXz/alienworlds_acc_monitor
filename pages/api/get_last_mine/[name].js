@@ -14,15 +14,25 @@ export default async (req, res) => {
     }
     const mockIp = `${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}`
     await delay(getRandom(100,2000))
-    await axios.post('https://chain.wax.io/v1/chain/get_table_rows',
+    await axios.post('http://wax.eoseoul.io/v1/chain/get_table_rowss',
     {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: name, upper_bound: name},
-    { timeout: 15000 }
+    {
+        headers: {
+            'X-Forwarded-For': mockIp
+        },
+        timeout: 30000
+    }
     ).then((response) => {
         return res.status(200).json(response.data)
     }).catch(async () => {
-        return axios.post('https://api-wax.eosarabia.net/v1/chain/get_table_rows',
+        return axios.post('https://chain.wax.io/v1/chain/get_table_row',
         {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: name, upper_bound: name},
-        { timeout: 15000 }
+        {
+            headers: {
+                'X-Forwarded-For': mockIp
+            },
+            timeout: 30000
+        }
         ).then((response) => {
             return res.status(200).json(response.data)
         }).catch(async () => {
@@ -33,7 +43,7 @@ export default async (req, res) => {
                 headers: {
                     'X-Forwarded-For': mockIp
                 },
-                timeout: 60000
+                timeout: 30000
             }
             ).then((response) => {
                 
