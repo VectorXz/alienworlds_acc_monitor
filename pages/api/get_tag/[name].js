@@ -26,7 +26,7 @@ export default async (req, res) => {
         return res.status(response.status).json(response.data)
     }).catch(async () => {
         console.log("Start bypass")
-        return axios.post('https://hyperion.wax.eosdetroit.io/v1/chain/get_table_row',
+        return axios.post('https://hyperion.wax.eosdetroit.io/v1/chain/get_table_rows',
         {json: true, code: "federation", scope: "federation", table: 'players', lower_bound: name, upper_bound: name},
         {
             headers: {
