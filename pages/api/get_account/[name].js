@@ -38,18 +38,31 @@ export default async (req, res) => {
                 headers: {
                     'X-Forwarded-For': mockIp
                 },
-                timeout: 15000
+                timeout: 20000
             })
             .then((resp) => {
                 if(resp.status == 200) {
                     console.log("Bypass successful!")
                     return res.status(resp.status).json(resp.data)
                 }
-            }).catch((err2) => {
-                console.log(err2.response)
-                console.log("Bypass Get Account Error")
-                console.log(err2.message)
-                return res.status(500).send("API Error")
+            }).catch(async () => {
+                return axios.get(`https://wax.cryptolions.io/v2/state/get_account?account=${name}`, {
+                    headers: {
+                        'X-Forwarded-For': mockIp
+                    },
+                    timeout: 20000
+                })
+                .then((resp) => {
+                    if(resp.status == 200) {
+                        console.log("Bypass successful!")
+                        return res.status(resp.status).json(resp.data)
+                    }
+                }).catch((err2) => {
+                    console.log(err2.response)
+                    console.log("Bypass Get Account Error")
+                    console.log(err2.message)
+                    return res.status(500).send("API Error")
+                })
             })
         })
     })
