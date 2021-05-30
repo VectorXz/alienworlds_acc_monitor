@@ -14,7 +14,7 @@ export default async (req, res) => {
     }
     const mockIp = `${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}`
     await delay(getRandom(100,2000))
-    await axios.post('http://wax.eoseoul.io/v1/chain/get_table_rowss',
+    await axios.post('http://wax.eoseoul.io/v1/chain/get_table_rows',
     {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: name, upper_bound: name},
     {
         headers: {
@@ -25,7 +25,7 @@ export default async (req, res) => {
     ).then((response) => {
         return res.status(200).json(response.data)
     }).catch(async () => {
-        return axios.post('https://chain.wax.io/v1/chain/get_table_row',
+        return axios.post('https://chain.wax.io/v1/chain/get_table_rows',
         {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: name, upper_bound: name},
         {
             headers: {
