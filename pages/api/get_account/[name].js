@@ -12,17 +12,43 @@ export default async (req, res) => {
     function getRandom(min, max) {
         return Math.random() * (max - min) + min;
     }
+    const mockIp = `${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}`
     await delay(getRandom(100,2000))
-    await axios.post('https://chain.wax.io/v1/chain/get_account',
-    {
-        "account_name": name,
-    }
-    ).then((response) => {
-        //console.log(response)
-        return res.status(response.status).json(response.data)
-    }).catch((err) => {
-        console.log("ERROR get cpu data")
-        console.log(err)
-        return res.status(err.response.status).json(err.response.data)
+    await axios.get(`https://wax.blokcrafters.io/v2/state/get_account?account=${name}`, {
+        timeout: 15000
+    })
+    .then((resp) => {
+        if(resp.status == 200) {
+            return res.status(resp.status).json(resp.data)
+        }
+    })
+    .catch(async (err) => {
+        console.log("[1] "+ err.message)
+        if(err.response && err.response.status === 500 && err.response.data.message.includes("not found")) return
+        return axios.get(`https://wax.cryptolions.io/v2/state/get_account?account=${name}`, {
+            timeout: 15000
+        })
+        .then((resp) => {
+            if(resp.status == 200) {
+                return res.status(resp.status).json(resp.data)
+            }
+        }).catch(async () => {
+            console.log("Bypass started!")
+            return axios.get(`https://wax.blokcrafters.io/v2/state/get_account?account=${name}`, {
+                headers: {
+                    'X-Forwarded-For': mockIp
+                },
+                timeout: 15000
+            })
+            .then((resp) => {
+                if(resp.status == 200) {
+                    console.log("Bypass successful!")
+                    return res.status(resp.status).json(resp.data)
+                }
+            }).catch((err2) => {
+                console.log("Get Account Error")
+                console.log(err2.message)
+            })
+        })
     })
 }

@@ -12,28 +12,30 @@ export default async (req, res) => {
     function getRandom(min, max) {
         return Math.random() * (max - min) + min;
     }
+    const mockIp = `${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}`
     await delay(getRandom(100,2000))
     await axios.post('https://wax.greymass.com/v1/chain/get_table_rows',
     {json: true, code: "federation", scope: "federation", table: 'players', lower_bound: name, upper_bound: name},
     { timeout: 15000 }
     ).then((response) => {
-        //console.log(data.rows[0]);
         return res.status(response.status).json(response.data)
-    }).catch((err) => {
-        console.log("Error get miner tag data")
-        console.log(err)
-        return res.status(err.response.status).json(err.response.data)
+    }).catch(async () => {
+        cosnsole.log("Start bypass")
+        return axios.post('https://wax.greymass.com/v1/chain/get_table_rows',
+        {json: true, code: "federation", scope: "federation", table: 'players', lower_bound: name, upper_bound: name},
+        {
+            headers: {
+                'X-Forwarded-For': mockIp
+            },
+            timeout: 15000
+        }
+        ).then((response) => {
+            console.log("Bypass success!")
+            return res.status(response.status).json(response.data)
+        }).catch((err) => {
+            console.log("Error get miner tag data")
+            console.log(err)
+            return res.status(err.response.status).json(err.response.data)
+        })
     })
-    // await axios.post('https://wax.pink.gg/v1/chain/get_account',
-    // {
-    //     "account_name": name,
-    // }
-    // ).then((response) => {
-    //     //console.log(response)
-    //     return res.status(response.status).json(response.data)
-    // }).catch((err) => {
-    //     console.log("ERROR get cpu data")
-    //     console.log(err)
-    //     return res.status(err.response.status).json(err.response.data)
-    // })
 }

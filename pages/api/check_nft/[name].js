@@ -15,20 +15,20 @@ export default async (req, res) => {
     const mockIp = `${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}`
     await delay(getRandom(100,2000))
     await axios.post('https://chain.wax.io/v1/chain/get_table_rows',
-    {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: name, upper_bound: name},
+    {json: true, code: "m.federation", scope: "m.federation", table: 'claims', lower_bound: name, upper_bound: name},
     { timeout: 15000 }
     ).then((response) => {
         return res.status(200).json(response.data)
     }).catch(async () => {
         return axios.post('https://api-wax.eosarabia.net/v1/chain/get_table_rows',
-        {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: name, upper_bound: name},
+        {json: true, code: "m.federation", scope: "m.federation", table: 'claims', lower_bound: name, upper_bound: name},
         { timeout: 15000 }
         ).then((response) => {
             return res.status(200).json(response.data)
         }).catch(async () => {
             console.log("Start Bypass")
             return axios.post('https://api-wax.eosarabia.net/v1/chain/get_table_rows',
-            {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: name, upper_bound: name},
+            {json: true, code: "m.federation", scope: "m.federation", table: 'claims', lower_bound: name, upper_bound: name},
             {
                 headers: {
                     'X-Forwarded-For': mockIp
@@ -39,7 +39,7 @@ export default async (req, res) => {
                 console.log("Bypass success!")
                 return res.status(200).json(response.data)
             }).catch((err) => {
-                console.log("Error get last mine data")
+                console.log("Error get nft claim data")
                 console.log(err)
                 return res.status(500)
             })
