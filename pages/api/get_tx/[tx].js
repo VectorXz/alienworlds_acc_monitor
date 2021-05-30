@@ -12,6 +12,7 @@ export default async (req, res) => {
     function getRandom(min, max) {
         return Math.random() * (max - min) + min;
     }
+    const mockIp = `${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}`
     await delay(getRandom(100,2000))
     await axios.get(`https://wax.blokcrafters.io/v2/history/get_transaction?id=${tx}`
     ).then((response) => {
