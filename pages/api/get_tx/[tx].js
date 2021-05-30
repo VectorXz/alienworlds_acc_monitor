@@ -7,44 +7,37 @@ export default async (req, res) => {
     const {
         query: { tx },
     } = req
-    //console.log(tx)
+
     if(!tx || typeof tx == "undefined" || tx == '') return res.status(400)
     function getRandom(min, max) {
         return Math.random() * (max - min) + min;
     }
     await delay(getRandom(100,2000))
-    await axios.get(`https://wax.greymass.com/v1/history/get_transaction?id=${tx}`
+    await axios.get(`https://wax.blokcrafters.io/v2/history/get_transaction?id=${tx}`
     ).then((response) => {
-        //console.log("TX RESP")
-        //console.log(data)
-        //console.log(data.actions[1].act.data.amount)
         return res.status(response.status).json(response.data)
-    }).catch(async (err) => {
-        console.log("EOSRIO ERR")
-        if(err.response) {
-            console.log(err.response.status, err.response.statusText)
-        } else {
-            console.log(err)
-        }
-        await delay(getRandom(300,2000))
+    }).catch(async () => {
         return axios.get(`https://wax.cryptolions.io/v2/history/get_transaction?id=${tx}`)
         .then((response) => res.status(response.status).json(response.data))
-        .catch((err2) => {
-            console.log("Fallback blockcrafter err")
-            console.log(err2)
-            return res.status(err2.response.status).json(err.response.data)
+        .catch(async () => {
+            
+            return axios.get(`https://wax.cryptolions.io/v2/history/get_transaction?id=${tx}`,
+            {
+                headers: {
+                    'X-Forwarded-For': mockIp
+                },
+                timeout: 15000
+            })
+            .then((response) => {
+                
+                return res.status(response.status).json(response.data)
+            })
+            .catch((err) => {
+                console.log(err.response)
+                console.log("Bypass Get TX Error")
+                console.log(err.message)
+                return res.status(500).send("API Error")
+            })
         })
     })
-    // await axios.post('https://wax.pink.gg/v1/chain/get_account',
-    // {
-    //     "account_name": name,
-    // }
-    // ).then((response) => {
-    //     //console.log(response)
-    //     return res.status(response.status).json(response.data)
-    // }).catch((err) => {
-    //     console.log("ERROR get cpu data")
-    //     console.log(err)
-    //     return res.status(err.response.status).json(err.response.data)
-    // })
 }

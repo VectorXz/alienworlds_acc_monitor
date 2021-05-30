@@ -3,7 +3,7 @@ import axios from '../AxiosAPI'
 import delay from 'delay'
 
 export default async (req, res) => {
-    console.log("/get_last_mine called")
+    console.log("/check_nft called")
     const {
         query: { name },
     } = req
@@ -15,20 +15,20 @@ export default async (req, res) => {
     const mockIp = `${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}`
     await delay(getRandom(100,2000))
     await axios.post('https://chain.wax.io/v1/chain/get_table_rows',
-    {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: name, upper_bound: name},
+    {json: true, code: "m.federation", scope: "m.federation", table: 'claims', lower_bound: name, upper_bound: name},
     { timeout: 15000 }
     ).then((response) => {
         return res.status(200).json(response.data)
     }).catch(async () => {
         return axios.post('https://api-wax.eosarabia.net/v1/chain/get_table_rows',
-        {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: name, upper_bound: name},
+        {json: true, code: "m.federation", scope: "m.federation", table: 'claims', lower_bound: name, upper_bound: name},
         { timeout: 15000 }
         ).then((response) => {
             return res.status(200).json(response.data)
         }).catch(async () => {
             
             return axios.post('https://api-wax.eosarabia.net/v1/chain/get_table_rows',
-            {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: name, upper_bound: name},
+            {json: true, code: "m.federation", scope: "m.federation", table: 'claims', lower_bound: name, upper_bound: name},
             {
                 headers: {
                     'X-Forwarded-For': mockIp
@@ -40,7 +40,7 @@ export default async (req, res) => {
                 return res.status(200).json(response.data)
             }).catch((err) => {
                 console.log(err.response)
-                console.log("Bypass Last Mine Data Error")
+                console.log("Bypass NFT Check Error")
                 console.log(err.message)
                 return res.status(500).send("API Error")
             })

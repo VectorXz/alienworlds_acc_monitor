@@ -15,9 +15,6 @@ export default function AccountCard(props) {
             initStaked.push(0)
         }
     }
-
-    console.log(accounts.length) 
-
     const [TLM, setTLM] = useState(initTLM)
     const [wax, setWax] = useState(initWax)
     const [staked, setStaked] = useState(initStaked)
@@ -57,14 +54,12 @@ export default function AccountCard(props) {
 
     const onWaxChange = (i, amt) => {
         if(amt == 'Loading') return
-        console.log("OnWaxChange", i, amt)
         const newWax = [...wax]
         newWax[i] = amt
         setWax(newWax)
     }
 
     useEffect(() => {
-        console.log(wax)
         if(wax.length > 0) {
             const totalWax = wax.reduce((total,now) => {
                 if(now == 'Loading') {
