@@ -27,7 +27,7 @@ export default async (req, res) => {
                 headers: {
                     'X-Forwarded-For': mockIp
                 },
-                timeout: 15000
+                timeout: 60000
             })
             .then((response) => {
                 
