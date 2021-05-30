@@ -20,7 +20,7 @@ export default async (req, res) => {
         return axios.get(`https://wax.cryptolions.io/v2/history/get_transaction?id=${tx}`)
         .then((response) => res.status(response.status).json(response.data))
         .catch(async () => {
-            console.log("Start bypass")
+            
             return axios.get(`https://wax.cryptolions.io/v2/history/get_transaction?id=${tx}`,
             {
                 headers: {
@@ -29,7 +29,7 @@ export default async (req, res) => {
                 timeout: 15000
             })
             .then((response) => {
-                console.log("Bypass success!")
+                
                 return res.status(response.status).json(response.data)
             })
             .catch((err) => {

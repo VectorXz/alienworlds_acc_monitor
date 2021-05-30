@@ -26,7 +26,7 @@ export default async (req, res) => {
         ).then((response) => {
             return res.status(200).json(response.data)
         }).catch(async () => {
-            console.log("Start Bypass")
+            
             return axios.post('https://api-wax.eosarabia.net/v1/chain/get_table_rows',
             {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: name, upper_bound: name},
             {
@@ -36,7 +36,7 @@ export default async (req, res) => {
                 timeout: 15000
             }
             ).then((response) => {
-                console.log("Bypass success!")
+                
                 return res.status(200).json(response.data)
             }).catch((err) => {
                 console.log(err.response)

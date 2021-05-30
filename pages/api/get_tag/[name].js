@@ -30,7 +30,7 @@ export default async (req, res) => {
             timeout: 15000
         }
         ).then((response) => {
-            console.log("Bypass success!")
+            
             return res.status(response.status).json(response.data)
         }).catch((err) => {
             console.log(err.response)

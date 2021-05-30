@@ -23,7 +23,6 @@ export default async (req, res) => {
         }
     })
     .catch(async (err) => {
-        console.log("[1] "+ err.message)
         if(err.response && err.response.status === 500 && err.response.data.message.includes("not found")) return
         return axios.get(`https://wax.cryptolions.io/v2/state/get_account?account=${name}`, {
             timeout: 15000
@@ -33,7 +32,7 @@ export default async (req, res) => {
                 return res.status(resp.status).json(resp.data)
             }
         }).catch(async () => {
-            console.log("Bypass started!")
+            
             return axios.get(`https://wax.eosrio.io/v2/state/get_account?account=${name}`, {
                 headers: {
                     'X-Forwarded-For': mockIp
@@ -42,7 +41,7 @@ export default async (req, res) => {
             })
             .then((resp) => {
                 if(resp.status == 200) {
-                    console.log("Bypass successful!")
+                    
                     return res.status(resp.status).json(resp.data)
                 }
             }).catch(async () => {
@@ -54,7 +53,7 @@ export default async (req, res) => {
                 })
                 .then((resp) => {
                     if(resp.status == 200) {
-                        console.log("Bypass successful!")
+                        
                         return res.status(resp.status).json(resp.data)
                     }
                 }).catch((err2) => {
