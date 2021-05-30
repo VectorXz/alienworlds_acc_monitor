@@ -34,7 +34,7 @@ export default async (req, res) => {
             }
         }).catch(async () => {
             console.log("Bypass started!")
-            return axios.get(`https://wax.blokcrafters.io/v2/state/get_account?account=${name}`, {
+            return axios.get(`https://wax.eosrio.io/v2/state/get_account?account=${name}`, {
                 headers: {
                     'X-Forwarded-For': mockIp
                 },
@@ -46,8 +46,10 @@ export default async (req, res) => {
                     return res.status(resp.status).json(resp.data)
                 }
             }).catch((err2) => {
-                console.log("Get Account Error")
+                console.log(err2.response)
+                console.log("Bypass Get Account Error")
                 console.log(err2.message)
+                return res.status(500).send("API Error")
             })
         })
     })

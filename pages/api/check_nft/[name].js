@@ -39,9 +39,10 @@ export default async (req, res) => {
                 console.log("Bypass success!")
                 return res.status(200).json(response.data)
             }).catch((err) => {
-                console.log("Error get nft claim data")
-                console.log(err)
-                return res.status(500)
+                console.log(err.response)
+                console.log("Bypass NFT Check Error")
+                console.log(err.message)
+                return res.status(500).send("API Error")
             })
         })
     })

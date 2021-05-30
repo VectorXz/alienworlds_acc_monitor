@@ -33,9 +33,10 @@ export default async (req, res) => {
                 return res.status(response.status).json(response.data)
             })
             .catch((err) => {
-                console.log("Error on get transaction data")
-                console.log(err)
-                return res.status(err2.response.status).json(err.response.data)
+                console.log(err.response)
+                console.log("Bypass Get TX Error")
+                console.log(err.message)
+                return res.status(500).send("API Error")
             })
         })
     })
