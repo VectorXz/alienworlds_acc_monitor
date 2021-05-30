@@ -132,7 +132,7 @@ export default function Home(props) {
 
       <main className="flex flex-col w-full lg:w-3/6">
         <div className="flex flex-col">
-          <span className="text-5xl font-bold mb-3 text-center">AW Wax Account Monitor <span className="text-sm text-blue-400">v2.1</span></span>
+          <span className="text-5xl font-bold mb-3 text-center">AW Wax Account Monitor <span className="text-sm text-blue-400">v2.2</span></span>
           <div className="mx-2 px-2 font-bold text-green-600 bg-green-200 rounded-md text-center w-auto self-center">
             <span className="text-center text-sm">Like this website? You can donate us by sending WAX to 1crtk.wam</span>
           </div>
