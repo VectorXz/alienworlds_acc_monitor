@@ -260,12 +260,12 @@ export default function AccountRow(props) {
         await axios.post('https://wax.eosn.io/v1/chain/get_table_rows',
         {json: true, code: "m.federation", scope: "m.federation", table: 'claims', lower_bound: user, upper_bound: user},
         {
-            timeout: 30000
+            timeout: 15000
         }
         ).then(function({status, data}) {
             if(status == 200) {
                 if(data.rows.length > 0) {
-                    return setNft(true)
+                    return setNft([...data.rows[0].template_ids])
                 }
             } else {
                 throw new Error(`API Error ${status}`)
@@ -274,13 +274,13 @@ export default function AccountRow(props) {
             return axios.post('https://wax.eosphere.io/v1/chain/get_table_rows',
             {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: user, upper_bound: user},
             {
-                timeout: 30000
+                timeout: 15000
             }
             )
             .then(({status, data}) => {
                 if(status == 200) {
                     if(data.rows.length > 0) {
-                        return setNft(true)
+                        return setNft([...data.rows[0].template_ids])
                     }
                 } else {
                     throw new Error(`API Error ${status}`)
@@ -290,7 +290,7 @@ export default function AccountRow(props) {
                 .then(({status, data}) => {
                     if(status == 200) {
                         if(data.rows.length > 0) {
-                            return setNft(true)
+                            return setNft([...data.rows[0].template_ids])
                         }
                     } else {
                         throw new Error(`API Error ${status}`)
@@ -360,6 +360,9 @@ export default function AccountRow(props) {
     const percent = accInfo.used ? rawPercent > 100 ? 100 : rawPercent : 0
     const barColor = percent >= 80 ? "bg-red-600" : percent >= 50 ? "bg-yellow-600" : "bg-blue-600"
     const bgRow = index%2!=0 ? "bg-gray-600" : ""
+    const lastMineBg = lastMine.last_mine.includes('month') || lastMine.last_mine.includes('day') ? 
+    'bg-red-700' : 
+    lastMine.last_mine.includes('hour') ? 'bg-yellow-600' : 'bg-blue-600'
 
     return (
         <>
@@ -384,11 +387,12 @@ export default function AccountRow(props) {
                 <td>{accInfo.cpu_weight}</td>
                 <td>{balance} TLM</td>
                 <td>{wax} WAX</td>
-                <td>{lastMine.last_mine}<br/>{history[0] ? 
-                                <span
-                                className={'inline-flex items-center justify-center px-2 py-1 mr-2 text-xs font-bold leading-none text-black rounded-full bg-green-600'}>
-                                {history[0].amount}
-                                </span> : ''}</td>
+                <td><span className={`text-sm font-bold px-2 rounded-md whitespace-nowrap `+lastMineBg}>{lastMine.last_mine}</span>
+                <br/>{history[0] ? 
+                <span
+                className={'inline-flex items-center justify-center font-bold text-xs'}>
+                {history[0].amount}
+                </span> : ''}</td>
                 <td className="text-xs">{update}</td>
                 <td>
                 <a 
@@ -397,7 +401,7 @@ export default function AccountRow(props) {
                 href={'https://wax.atomichub.io/explorer/account/'+acc}
                 rel="noopener noreferrer" target="_blank">NFT</a>
                 <br />
-                {nft && <span className="font-bold text-xs">Claimable!</span>}
+                {nft && nft.length > 0 && <span className="font-bold text-xs">{nft.length} NFTs Claimable!</span>}
                 </td>
             </tr>
             {/* {expanded && <>

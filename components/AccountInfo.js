@@ -20,7 +20,7 @@ export default function AccountInfo(props) {
     })
     const [history, setHistory] = useState([])
     const [minerName, setMinerName] = useState("Loading")
-    const [nft, setNft] = useState(false)
+    const [nft, setNft] = useState([])
 
     function getRandom(min, max) {
         return Math.random() * (max - min) + min;
@@ -264,7 +264,7 @@ export default function AccountInfo(props) {
         ).then(function({status, data}) {
             if(status == 200) {
                 if(data.rows.length > 0) {
-                    return setNft(true)
+                    return setNft([...data.rows[0].template_ids])
                 }
             } else {
                 throw new Error(`API Error ${status}`)
@@ -279,7 +279,7 @@ export default function AccountInfo(props) {
             .then(({status, data}) => {
                 if(status == 200) {
                     if(data.rows.length > 0) {
-                        return setNft(true)
+                        return setNft([...data.rows[0].template_ids])
                     }
                 } else {
                     throw new Error(`API Error ${status}`)
@@ -289,7 +289,7 @@ export default function AccountInfo(props) {
                 .then(({status, data}) => {
                     if(status == 200) {
                         if(data.rows.length > 0) {
-                            return setNft(true)
+                            return setNft([...data.rows[0].template_ids])
                         }
                     } else {
                         throw new Error(`API Error ${status}`)
@@ -397,7 +397,7 @@ export default function AccountInfo(props) {
                     <span className="text-xs">Next update: {DateTime.fromRFC2822(update).plus({ minutes: 1, seconds: 30}).toRFC2822()}</span>
                 </div>
                 <div className="flex flex-row lg:flex-col flex-wrap lg:flex-nowrap gap-y-2 mt-2 lg:mt-0 lg:gap-y-0.5">
-                    {nft && <span className="font-bold text-xs self-end">NFT Claimable!</span>}
+                    {nft && nft.length > 0 && <span className="font-bold text-xs">{nft.length} NFTs Claimable!</span>}
                     <span className="text-sm font-bold self-end">Last TLM mined ({lastMine.last_mine}):</span>
                     <span className="text-xs my-2 self-end">{history.map((hist, i) => {
                         return (
