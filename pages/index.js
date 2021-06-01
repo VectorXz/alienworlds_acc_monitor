@@ -262,7 +262,15 @@ hover:bg-blue-200 py-1 px-3 font-bold ${layout==='Table' ? 'bg-blue-500 text-whi
 export async function getServerSideProps(context) {
   //console.log(context.query)
   if('accounts' in context.query) {
-    const acc = JSON.parse(atob(context.query.accounts))
+    let acc = []
+    try {
+      acc = JSON.parse(atob(context.query.accounts))
+    } catch (e) {
+      console.log("Parse account error")
+      return {
+        props: {}
+      }
+    }
     //console.log(acc)
     return {
       props: {
