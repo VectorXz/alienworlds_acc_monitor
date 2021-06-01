@@ -169,7 +169,7 @@ export default function Home(props) {
               style={{border: 'none', overflow: 'hidden'}}
               scrolling="no"
               frameBorder={0}
-              allowFullScreen="true"
+              allowFullScreen={true}
               allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
               />
             </div>
