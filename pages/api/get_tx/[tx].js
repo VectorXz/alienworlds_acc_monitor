@@ -8,7 +8,7 @@ export default async (req, res) => {
         query: { tx },
     } = req
 
-    if(!tx || typeof tx == "undefined" || tx == '') return res.status(400)
+    if(!tx || typeof tx == "undefined" || tx == '' || tx.length != 64) return res.status(400)
     function getRandom(min, max) {
         return Math.random() * (max - min) + min;
     }

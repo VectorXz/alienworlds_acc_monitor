@@ -4,10 +4,10 @@ import delay from 'delay'
 
 export default async (req, res) => {
     //console.log("/get_account called")
-    const {
+    let {
         query: { name },
     } = req
-    //console.log(name)
+    name = name.match(/[a-z0-9.]{4,5}.wam/gm)
     if(!name || typeof name == "undefined" || name == '') return res.status(400)
     function getRandom(min, max) {
         return Math.random() * (max - min) + min;
