@@ -160,11 +160,23 @@ export default function Home(props) {
               DELETE ALL DATAS (COOKIES)
             </button>
           </div>
-          <div className="flex-1 flex-col">
+          <div className="flex-1 flex-col w-full">
+            <div className="flex w-full items-center justify-center">
+              <iframe
+              src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FAlienworldsfun-100734315569585&tabs&width=340&height=130&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId"
+              width={340}
+              height={130}
+              style={{border: 'none', overflow: 'hidden'}}
+              scrolling="no"
+              frameBorder={0}
+              allowFullScreen="true"
+              allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+              />
+            </div>
             {account.length > 0 && 
-              <div className="flex-1 flex-col">
+              <div className="flex-1 flex-row text-center mt-2">
                 <div className="text-center mb-1"><span className="text-xl font-bold mb-1">Save this link to view these accounts later</span></div>
-                <div><input type="text" className="shadow appearance-none w-4/6 rounded w-full py-2 px-3 bg-gray-300 text-gray-800 font-bold leading-tight focus:outline-none focus:shadow-outline cursor-pointer"
+                <div><input type="text" className="shadow appearance-none w-4/6 rounded w-full py-2 px-3 bg-gray-300 mt-1 text-gray-800 font-bold leading-tight focus:outline-none focus:shadow-outline cursor-pointer"
                 value={link} onClick={(e) => {e.target.select();navigator.clipboard.writeText(link);setCopied(true)}} onFocus={(e) => {e.target.select();}} readOnly /></div>
                 {copied && <div><span className="font-bold text-sm mt-3">Copied to clipboard!</span></div>}
               </div>
