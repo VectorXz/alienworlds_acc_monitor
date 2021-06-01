@@ -3,7 +3,7 @@ import axios from '../AxiosAPI'
 import delay from 'delay'
 
 export default async (req, res) => {
-    console.log("/check_nft called")
+    //console.log("/check_nft called")
     const {
         query: { name },
     } = req

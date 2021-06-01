@@ -16,7 +16,7 @@ export default function AccountTable(props) {
         }
     }
 
-    console.log(accounts.length) 
+    //console.log(accounts.length) 
 
     const [TLM, setTLM] = useState(initTLM)
     const [wax, setWax] = useState(initWax)
@@ -57,14 +57,14 @@ export default function AccountTable(props) {
 
     const onWaxChange = (i, amt) => {
         if(amt == 'Loading') return
-        console.log("OnWaxChange", i, amt)
+        //console.log("OnWaxChange", i, amt)
         const newWax = [...wax]
         newWax[i] = amt
         setWax(newWax)
     }
 
     useEffect(() => {
-        console.log(wax)
+        //console.log(wax)
         if(wax.length > 0) {
             const totalWax = wax.reduce((total,now) => {
                 if(now == 'Loading') {

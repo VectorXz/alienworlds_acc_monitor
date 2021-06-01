@@ -3,7 +3,7 @@ import axios from '../AxiosAPI'
 import delay from 'delay'
 
 export default async (req, res) => {
-    console.log("/get_tx called")
+    //console.log("/get_tx called")
     const {
         query: { tx },
     } = req

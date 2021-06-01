@@ -44,7 +44,7 @@ export default function Home(props) {
   const handleAddAcc = (e) => {
     e.preventDefault()
     const account_arr = Array.from(new Set(input.split(" ")))
-    console.log(account_arr)
+    //console.log(account_arr)
     let newAcc = [...account]
     for(let acc of account_arr) {
       acc = acc.replace(/\s/g, "")
@@ -83,7 +83,7 @@ export default function Home(props) {
   }
 
   const handleDeleteAcc = (acc) => {
-    console.log("Delete account ",acc)
+    //console.log("Delete account ",acc)
     let newAcc = [...account].filter((arr) => arr != acc)
     setAccount(newAcc)
   }
@@ -96,8 +96,8 @@ export default function Home(props) {
   }
 
   useEffect(() => {
-    console.log("Account Changed!")
-    console.log(account)
+    //console.log("Account Changed!")
+    //console.log(account)
     cookies.set("accounts", account, cookieOptions)
     setLink('https://www.alienworlds.fun/?accounts='+btoa(JSON.stringify(account)))
   }, [account])
@@ -126,8 +126,8 @@ export default function Home(props) {
   return (
     <div className="flex flex-col min-h-screen items-center justify-center mt-10 px-2 lg:px-0">
       <Head>
-        <title>Alienworlds Wax Account Monitor</title>
-        <meta name="description" content="Alienworlds Wax Account Monitor" />
+        <title>Alienworlds Account Monitor | The only AW monitor website you needed | Monitor CPU,WAX,TLM,NFT, etc. of alienworlds here!</title>
+        <meta name="description" content="Alienworlds.fun the only alienworlds monitor website that you needed. Included CPU,WAX,TLM,NFT,etc. No login needed. Start monitoring your alienworlds team now!" />
       </Head>
 
       <main className="flex flex-col w-full lg:w-3/6">
