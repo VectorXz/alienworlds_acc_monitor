@@ -1,6 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import axios from '../AxiosAPI'
-import delay from 'delay'
 
 export default async (req, res) => {
     //console.log("/get_account called")
@@ -13,7 +12,6 @@ export default async (req, res) => {
         return Math.random() * (max - min) + min;
     }
     const mockIp = `${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}`
-    await delay(getRandom(100,2000))
     await axios.get(`https://api-wax.eosarabia.net/v2/state/get_account?account=${name}`, {
         headers: {
             'X-Forwarded-For': mockIp

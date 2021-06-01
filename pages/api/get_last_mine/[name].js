@@ -1,6 +1,5 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import axios from '../AxiosAPI'
-import delay from 'delay'
 
 export default async (req, res) => {
     //console.log("/get_last_mine called")
@@ -13,7 +12,6 @@ export default async (req, res) => {
         return Math.random() * (max - min) + min;
     }
     const mockIp = `${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}`
-    await delay(getRandom(100,2000))
     await axios.post('http://wax.eoseoul.io/v1/chain/get_table_rows',
     {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: name, upper_bound: name},
     {
