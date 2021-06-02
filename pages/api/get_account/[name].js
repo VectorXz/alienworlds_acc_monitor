@@ -14,9 +14,6 @@ export default async (req, res) => {
     }
     const mockIp = `${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}`
     await axios.get(`https://apiwax.3dkrender.com/v2/state/get_account?account=${name}`, {
-        headers: {
-            'X-Forwarded-For': mockIp
-        },
         timeout: 5000
     })
     .then((resp) => {
@@ -27,9 +24,6 @@ export default async (req, res) => {
     .catch(async (err) => {
         if(err.response && err.response.status === 500 && err.response.data && err.response.data.message && err.response.data.message.includes("not found")) return
         return axios.get(`https://wax.cryptolions.io/v2/state/get_account?account=${name}`, {
-            headers: {
-                'X-Forwarded-For': mockIp
-            },
             timeout: 5000
         })
         .then((resp) => {
@@ -38,9 +32,6 @@ export default async (req, res) => {
             }
         }).catch(async () => {
             return axios.get(`https://wax.eosrio.io/v2/state/get_account?account=${name}`, {
-                headers: {
-                    'X-Forwarded-For': mockIp
-                },
                 timeout: 5000
             })
             .then((resp) => {
@@ -50,9 +41,6 @@ export default async (req, res) => {
                 }
             }).catch(async () => {
                 return axios.get(`https://wax.eosphere.io/v2/state/get_account?account=${name}`, {
-                    headers: {
-                        'X-Forwarded-For': mockIp
-                    },
                     timeout: 5000
                 })
                 .then((resp) => {
@@ -61,7 +49,7 @@ export default async (req, res) => {
                     }
                 }).catch((err2) => {
                     console.log(err2.response)
-                    console.log("Bypass Get Account Error")
+                    console.log("Get Account Error")
                     console.log(err2.message)
                     return res.status(500).send("API Error")
                 })

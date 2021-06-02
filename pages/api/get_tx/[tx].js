@@ -14,9 +14,6 @@ export default async (req, res) => {
     const mockIp = `${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}`
     await axios.get(`https://apiwax.3dkrender.com/v2/history/get_transaction?id=${tx}`,
     {
-        headers: {
-            'X-Forwarded-For': mockIp
-        },
         timeout: 60000
     }
     ).then((response) => {
@@ -24,18 +21,12 @@ export default async (req, res) => {
     }).catch(async () => {
         return axios.get(`https://apiwax.3dkrender.com/v2/history/get_transaction?id=${tx}`,
         {
-            headers: {
-                'X-Forwarded-For': mockIp
-            },
             timeout: 60000
         })
         .then((response) => res.status(response.status).json(response.data))
         .catch(async () => {
             return axios.get(`https://wax.eosrio.io/v2/history/get_transaction?id=${tx}`,
             {
-                headers: {
-                    'X-Forwarded-For': mockIp
-                },
                 timeout: 60000
             })
             .then((response) => {
