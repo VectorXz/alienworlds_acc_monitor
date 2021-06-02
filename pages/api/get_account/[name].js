@@ -17,7 +17,7 @@ export default async (req, res) => {
         headers: {
             'X-Forwarded-For': mockIp
         },
-        timeout: 30000
+        timeout: 5000
     })
     .then((resp) => {
         if(resp.status == 200) {
@@ -30,7 +30,7 @@ export default async (req, res) => {
             headers: {
                 'X-Forwarded-For': mockIp
             },
-            timeout: 30000
+            timeout: 5000
         })
         .then((resp) => {
             if(resp.status == 200) {
@@ -41,7 +41,7 @@ export default async (req, res) => {
                 headers: {
                     'X-Forwarded-For': mockIp
                 },
-                timeout: 30000
+                timeout: 5000
             })
             .then((resp) => {
                 if(resp.status == 200) {
@@ -53,7 +53,7 @@ export default async (req, res) => {
                     headers: {
                         'X-Forwarded-For': mockIp
                     },
-                    timeout: 30000
+                    timeout: 5000
                 })
                 .then((resp) => {
                     if(resp.status == 200) {

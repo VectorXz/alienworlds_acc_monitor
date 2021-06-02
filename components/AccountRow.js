@@ -30,7 +30,7 @@ export default function AccountRow(props) {
     const fetchAccountData = async (user) => {
         await delay(getRandom(100, 2000))
         return axios.get(`https://apiwax.3dkrender.com/v2/state/get_account?account=${user}`, {
-            timeout: 30000
+            timeout: 5000
         })
         .then((resp) => {
             if(resp.status == 200) {
@@ -58,7 +58,7 @@ export default function AccountRow(props) {
             console.log(err)
             if(err.response && err.response.status === 500 && err.response.data.message.includes("not found")) return
             return axios.get(`https://wax.eosphere.io/v2/state/get_account?account=${user}`, {
-                timeout: 30000
+                timeout: 5000
             })
             .then((resp) => {
                 if(resp.status == 200) {
@@ -117,7 +117,7 @@ export default function AccountRow(props) {
         const minerName = await axios.post('https://wax.pink.gg/v1/chain/get_table_rows',
         {json: true, code: "federation", scope: "federation", table: 'players', lower_bound: user, upper_bound: user},
         {
-            timeout: 30000
+            timeout: 5000
         }
         ).then(function({status, data}) {
             if(status == 200) {
@@ -155,7 +155,7 @@ export default function AccountRow(props) {
         const lastMineData = await axios.post('https://wax.eosn.io/v1/chain/get_table_rows',
         {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: user, upper_bound: user},
         {
-            timeout: 30000
+            timeout: 5000
         }
         ).then(function({data}) {
             //console.log(data.rows[0]);
@@ -173,7 +173,7 @@ export default function AccountRow(props) {
             return axios.post('https://api-wax.eosauthority.com/v1/chain/get_table_rows',
             {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: user, upper_bound: user},
             {
-                timeout: 30000
+                timeout: 5000
             }
             )
             .then(({data}) => {
@@ -215,19 +215,19 @@ export default function AccountRow(props) {
         await delay(getRandom(300,5000))
         if(tx == "None") { return }
         const lastMineTLM = await axios.get(`https://apiwax.3dkrender.com/v2/history/get_transaction?id=${tx}`,{
-            timeout: 30000
+            timeout: 5000
         }
         ).then(function({data}) {
             return data.actions[1].act.data.amount
         }).catch(async () => {
             await delay(getRandom(300,5000))
             return axios.get(`https://wax.greymass.com/v1/history/get_transaction?id=${tx}`,{
-                timeout: 30000
+                timeout: 5000
             })
             .then(({data}) => data.traces[1].act.data.quantity.slice(0, -4))
             .catch(async () => {
                 return axios.get(`https://wax.eosrio.io/v2/history/get_transaction?id=${tx}`,{
-                    timeout: 30000
+                    timeout: 5000
                 })
                 .then(({data}) => data.actions[1].act.data.amount)
                 .catch(async () => {

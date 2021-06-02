@@ -29,7 +29,7 @@ export default function AccountInfo(props) {
     const fetchAccountData = async (user) => {
         await delay(getRandom(100, 2000))
         return axios.get(`https://apiwax.3dkrender.com/v2/state/get_account?account=${user}`, {
-            timeout: 30000
+            timeout: 5000
         })
         .then((resp) => {
             if(resp.status == 200) {
@@ -57,7 +57,7 @@ export default function AccountInfo(props) {
             console.log(err)
             if(err.response && err.response.status === 500 && err.response.data.message.includes("not found")) return
             return axios.get(`https://wax.eosphere.io/v2/state/get_account?account=${user}`, {
-                timeout: 30000
+                timeout: 5000
             })
             .then((resp) => {
                 if(resp.status == 200) {

@@ -19,7 +19,7 @@ export default async (req, res) => {
         headers: {
             'X-Forwarded-For': mockIp
         },
-        timeout: 30000
+        timeout: 5000
     }
     ).then((response) => {
         return res.status(200).json(response.data)
@@ -30,7 +30,7 @@ export default async (req, res) => {
             headers: {
                 'X-Forwarded-For': mockIp
             },
-            timeout: 30000
+            timeout: 5000
         }
         ).then((response) => {
             return res.status(200).json(response.data)
@@ -42,7 +42,7 @@ export default async (req, res) => {
                 headers: {
                     'X-Forwarded-For': mockIp
                 },
-                timeout: 30000
+                timeout: 5000
             }
             ).then((response) => {
                 
