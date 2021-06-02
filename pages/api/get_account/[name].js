@@ -25,7 +25,7 @@ export default async (req, res) => {
         }
     })
     .catch(async (err) => {
-        if(err.response && err.response.status === 500 && err.response.data && err.response.data.message.includes("not found")) return
+        if(err.response && err.response.status === 500 && err.response.data && err.response.data.message && err.response.data.message.includes("not found")) return
         return axios.get(`https://wax.cryptolions.io/v2/state/get_account?account=${name}`, {
             headers: {
                 'X-Forwarded-For': mockIp
