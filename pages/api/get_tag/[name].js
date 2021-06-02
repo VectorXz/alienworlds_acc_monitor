@@ -9,7 +9,7 @@ export default async (req, res) => {
     name = name.match(/[a-z0-9.]{4,5}.wam/gm)
     if(!name || typeof name == "undefined" || name == '') return res.status(400)
     function getRandom(min, max) {
-        return Math.random() * (max - min) + min;
+        return Math.floor(Math.random() * (max - min) + min);
     }
     const mockIp = `${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}`
     await axios.post('https://wax.greymass.com/v1/chain/get_table_rows',

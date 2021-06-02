@@ -23,7 +23,7 @@ export default function AccountInfo(props) {
     const [nft, setNft] = useState([])
 
     function getRandom(min, max) {
-        return Math.random() * (max - min) + min;
+        return Math.floor(Math.random() * (max - min) + min);
     }
 
     const fetchAccountData = async (user) => {
