@@ -22,7 +22,7 @@ export default async (req, res) => {
     ).then((response) => {
         return res.status(response.status).json(response.data)
     }).catch(async () => {
-        return axios.get(`https://api-wax.eosarabia.net/v2/history/get_transaction?id=${tx}`,
+        return axios.get(`https://apiwax.3dkrender.com/v2/history/get_transaction?id=${tx}`,
         {
             headers: {
                 'X-Forwarded-For': mockIp

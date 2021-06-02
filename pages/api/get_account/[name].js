@@ -13,7 +13,7 @@ export default async (req, res) => {
         return Math.floor(Math.random() * (max - min) + min);
     }
     const mockIp = `${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}`
-    await axios.get(`https://api-wax.eosarabia.net/v2/state/get_account?account=${name}`, {
+    await axios.get(`https://apiwax.3dkrender.com/v2/state/get_account?account=${name}`, {
         headers: {
             'X-Forwarded-For': mockIp
         },

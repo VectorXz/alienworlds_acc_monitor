@@ -29,7 +29,7 @@ export default function AccountRow(props) {
 
     const fetchAccountData = async (user) => {
         await delay(getRandom(100, 2000))
-        return axios.get(`https://api-wax.eosarabia.net/v2/state/get_account?account=${user}`, {
+        return axios.get(`https://apiwax.3dkrender.com/v2/state/get_account?account=${user}`, {
             timeout: 30000
         })
         .then((resp) => {

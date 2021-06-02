@@ -36,7 +36,7 @@ export default async (req, res) => {
             return res.status(200).json(response.data)
         }).catch(async () => {
             
-            return axios.post('https://api-wax.eosarabia.net/v1/chain/get_table_rows',
+            return axios.post('https://apiwax.3dkrender.com/v1/chain/get_table_rows',
             {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: name, upper_bound: name},
             {
                 headers: {
