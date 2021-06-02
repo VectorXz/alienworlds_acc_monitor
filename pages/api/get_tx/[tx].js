@@ -9,7 +9,7 @@ export default async (req, res) => {
 
     if(!tx || typeof tx == "undefined" || tx == '' || tx.length != 64) return res.status(400)
     function getRandom(min, max) {
-        return Math.random() * (max - min) + min;
+        return Math.floor(Math.random() * (max - min) + min);
     }
     const mockIp = `${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}.${getRandom(1,255)}`
     await axios.get(`https://apiwax.3dkrender.com/v2/history/get_transaction?id=${tx}`,

@@ -8,6 +8,7 @@ export default async (req, res) => {
     } = req
     name = name.match(/[a-z0-9.]{4,5}.wam/gm)
     if(!name || typeof name == "undefined" || name == '') return res.status(400)
+    name = name[0]
     function getRandom(min, max) {
         return Math.floor(Math.random() * (max - min) + min);
     }
