@@ -31,7 +31,7 @@ export default async (req, res) => {
         })
         .then((response) => res.status(response.status).json(response.data))
         .catch(async () => {
-            return axios.get(`https://api.wax.alohaeos.com/v2/history/get_transaction?id=${tx}`,
+            return axios.get(`https://wax.eosrio.io/v2/history/get_transaction?id=${tx}`,
             {
                 headers: {
                     'X-Forwarded-For': mockIp

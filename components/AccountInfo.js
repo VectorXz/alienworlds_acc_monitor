@@ -28,8 +28,8 @@ export default function AccountInfo(props) {
 
     const fetchAccountData = async (user) => {
         await delay(getRandom(100, 2000))
-        return axios.get(`https://wax.blokcrafters.io/v2/state/get_account?account=${user}`, {
-            timeout: 15000
+        return axios.get(`https://api-wax.eosarabia.net/v2/state/get_account?account=${user}`, {
+            timeout: 30000
         })
         .then((resp) => {
             if(resp.status == 200) {
@@ -56,8 +56,8 @@ export default function AccountInfo(props) {
         .catch(async (err) => {
             console.log(err)
             if(err.response && err.response.status === 500 && err.response.data.message.includes("not found")) return
-            return axios.get(`https://wax.cryptolions.io/v2/state/get_account?account=${user}`, {
-                timeout: 15000
+            return axios.get(`https://wax.eosphere.io/v2/state/get_account?account=${user}`, {
+                timeout: 30000
             })
             .then((resp) => {
                 if(resp.status == 200) {
