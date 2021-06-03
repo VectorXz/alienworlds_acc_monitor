@@ -41,7 +41,7 @@ router.get('/:tx', async (req, res) => {
         headers: {
             'X-Forwarded-For': mockIp
         },
-        timeout: 10000
+        timeout: 15000
     })
     .then((resp) => {
         if(resp.data) {
@@ -62,7 +62,7 @@ router.get('/:tx', async (req, res) => {
         console.log(urlv2)
         await axios.get(urlv2, {
             headers: {
-                timeout: 10000
+                timeout: 15000
             }
         })
         .then((resp) => {

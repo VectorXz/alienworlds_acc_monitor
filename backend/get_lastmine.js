@@ -42,7 +42,7 @@ router.get('/:account', async (req, res) => {
         headers: {
             'X-Forwarded-For': mockIp
         },
-        timeout: 10000
+        timeout: 15000
     })
     .then((resp) => {
         if(resp.data) {
