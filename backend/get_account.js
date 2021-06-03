@@ -16,7 +16,6 @@ const base_api = [
     'https://apiwax.3dkrender.com',
     'https://wax.eu.eosamsterdam.net',
     'https://wax.csx.io',
-    'https://api-wax.eosauthority.com',
     'https://wax.eoseoul.io',
     'https://wax.eosphere.io',
     'https://api.waxeastern.cn'
