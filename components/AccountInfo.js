@@ -26,7 +26,7 @@ export default function AccountInfo(props) {
     }
 
     const fetchAccountData = async (user) => {
-        await axios.get(`https://api.alienworlds.fun/get_account/${user}`)
+        await axios.get(`http://localhost:3003/get_account/${user}`)
         .then((resp) => {
             if(resp && resp.data) {
                 const newCpuState = {
@@ -44,7 +44,7 @@ export default function AccountInfo(props) {
                 console.log(err.message)
             }
         })
-        await axios.get(`https://api.alienworlds.fun/get_tlm/${user}`)
+        await axios.get(`http://localhost:3003/get_tlm/${user}`)
         .then((resp) => {
             if(resp && resp.data) {
                 setBalance(resp.data[0].slice(0, -4))
@@ -61,7 +61,7 @@ export default function AccountInfo(props) {
 
     const getMinerName = async (user) => {
         await delay(getRandom(100,1500))
-        const tagName = await axios.get(`https://api.alienworlds.fun/get_tag/${user}`)
+        const tagName = await axios.get(`http://localhost:3003/get_tag/${user}`)
         .then(function({status, data}) {
             if(status == 200) {
                 if(data.rows.length < 1) return "NOT_FOUND"
@@ -88,7 +88,7 @@ export default function AccountInfo(props) {
 
     const getLastMineInfo = async (user) => {
         await delay(getRandom(100,1500))
-        const lastMineData = await axios.get(`https://api.alienworlds.fun/get_lastmine/${user}`)
+        const lastMineData = await axios.get(`http://localhost:3003/get_lastmine/${user}`)
         .then(function({data}) {
             if(data.rows.length < 1) return {
                 last_mine: "None",
@@ -126,7 +126,7 @@ export default function AccountInfo(props) {
     const fetchLastMineTx = async (tx) => {
         await delay(getRandom(100,1500))
         if(tx == "None") { return }
-        const lastMineTLM = await axios.get(`https://api.alienworlds.fun/get_tx/${tx}`)
+        const lastMineTLM = await axios.get(`http://localhost:3003/get_tx/${tx}`)
         .then(function({data}) {
             return data.mined
         }).catch((err) => {
@@ -153,7 +153,7 @@ export default function AccountInfo(props) {
 
     const checkNFT = async (user) => {
         await delay(getRandom(100,1500))
-        await axios.get(`https://api.alienworlds.fun/check_nft/${user}`)
+        await axios.get(`http://localhost:3003/check_nft/${user}`)
         .then(function({status, data}) {
             if(status == 200) {
                 if(data.rows.length > 0) {

@@ -1,8 +1,6 @@
 const express = require('express')
 const axios = require('./axios')
-const axiosRetry = require('axios-retry')
 
-axiosRetry(axios, { retries: 3 });
 
 const router = express.Router()
 

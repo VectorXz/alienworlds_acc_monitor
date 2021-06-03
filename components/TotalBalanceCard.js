@@ -50,24 +50,24 @@ const TotalBalanceCard = (props) => {
         <div className="flex flex-col rounded-md items-center justify-center bg-gray-700 w-full h-full py-5">
           <span className="text-xl font-bold">Total USDT</span>
           <span className="text-4xl font-bold text-green-400">{totalUSDT.toFixed(2)} USDT</span>
-          <div class="flex flex-row gap-x-5">
-            <label class="inline-flex items-center mt-3">
-                <input type="checkbox" class="form-checkbox h-4 w-4 text-gray-600"
+          <div className="flex flex-row gap-x-5">
+            <label className="inline-flex items-center mt-3">
+                <input type="checkbox" className="form-checkbox h-4 w-4 text-gray-600"
                 defaultChecked={options.TLM}
                 onClick={() => setOptions({...options, TLM: !options.TLM})} />
-                <span class="ml-2">TLM</span>
+                <span className="ml-2">TLM</span>
             </label>
-            <label class="inline-flex items-center mt-3">
-                <input type="checkbox" class="form-checkbox h-4 w-4 text-gray-600"
+            <label className="inline-flex items-center mt-3">
+                <input type="checkbox" className="form-checkbox h-4 w-4 text-gray-600"
                 defaultChecked={options.WAX}
                 onClick={() => setOptions({...options, WAX: !options.WAX})} />
-                <span class="ml-2">WAX</span>
+                <span className="ml-2">WAX</span>
             </label>
-            <label class="inline-flex items-center mt-3">
-                <input type="checkbox" class="form-checkbox h-4 w-4 text-gray-600"
+            <label className="inline-flex items-center mt-3">
+                <input type="checkbox" className="form-checkbox h-4 w-4 text-gray-600"
                 defaultChecked={options.Staked}
                 onClick={() => setOptions({...options, Staked: !options.Staked})} />
-                <span class="ml-2">WAX Staked</span>
+                <span className="ml-2">WAX Staked</span>
             </label>
           </div>
         </div>
