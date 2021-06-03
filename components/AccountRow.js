@@ -10,7 +10,6 @@ export default function AccountRow(props) {
     const [accInfo, setAccInfo] = useState({})
     const [balance, setBalance] = useState("Loading")
     const [wax, setWax] = useState("Loading")
-    const isInitialMount = useRef(true)
     const isInitialTx = useRef(true)
     const [update, setUpdate] = useState("None")
     const [lastMine, setLastMine] = useState({
@@ -28,137 +27,70 @@ export default function AccountRow(props) {
     }
 
     const fetchAccountData = async (user) => {
-        await delay(getRandom(100, 2000))
-        return axios.get(`https://apiwax.3dkrender.com/v2/state/get_account?account=${user}`, {
-            timeout: 5000
-        })
+        await axios.get(`https://api.alienworlds.fun/get_account/${user}`)
         .then((resp) => {
-            if(resp.status == 200) {
-                const data = resp.data
-                //console.log(data)
+            if(resp && resp.data) {
                 const newCpuState = {
-                    ...data.account.cpu_limit,
-                    cpu_weight: data.account.total_resources.cpu_weight
+                    ...resp.data.cpu_limit,
+                    cpu_weight: resp.data.total_resources.cpu_weight
                 }
-                //console.log(newCpuState)
                 setAccInfo(newCpuState)
-                let lastTokenBalance = [0, 0]
-                for (let token of data.tokens) {
-                    if(token.symbol === "WAX") {
-                        lastTokenBalance[1] = token.amount
-                    } else if(token.symbol === "TLM") {
-                        lastTokenBalance[0] = token.amount
-                    }
-                }
-                setBalance(lastTokenBalance[0]) //set tlm balance
-                setWax(lastTokenBalance[1]) //set wax balance
+                setWax(resp.data.core_liquid_balance.slice(0, -4))
             }
         })
-        .catch(async (err) => {
-            console.log(err)
-            if(err.response && err.response.status === 500 && err.response.data.message.includes("not found")) return
-            return axios.get(`https://wax.eosphere.io/v2/state/get_account?account=${user}`, {
-                timeout: 5000
-            })
-            .then((resp) => {
-                if(resp.status == 200) {
-                    const data = resp.data
-                    //console.log(data)
-                    const newCpuState = {
-                        ...data.account.cpu_limit,
-                        cpu_weight: data.account.total_resources.cpu_weight
-                    }
-                    //console.log(newCpuState)
-                    setAccInfo(newCpuState)
-                    let lastTokenBalance = [0, 0]
-                    for (let token of data.tokens) {
-                        if(token.symbol === "WAX") {
-                            lastTokenBalance[1] = token.amount
-                        } else if(token.symbol === "TLM") {
-                            lastTokenBalance[0] = token.amount
-                        }
-                    }
-                    setBalance(lastTokenBalance[0]) //set tlm balance
-                    setWax(lastTokenBalance[1]) //set wax balance
-                }
-            }).catch(async () => {
-                return axios.get(`/api/get_account/${user}`)
-                .then((resp) => {
-                    if(resp.status == 200) {
-                        const data = resp.data
-                        //console.log(data)
-                        const newCpuState = {
-                            ...data.account.cpu_limit,
-                            cpu_weight: data.account.total_resources.cpu_weight
-                        }
-                        //console.log(newCpuState)
-                        setAccInfo(newCpuState)
-                        let lastTokenBalance = [0, 0]
-                        for (let token of data.tokens) {
-                            if(token.symbol === "WAX") {
-                                lastTokenBalance[1] = token.amount
-                            } else if(token.symbol === "TLM") {
-                                lastTokenBalance[0] = token.amount
-                            }
-                        }
-                        setBalance(lastTokenBalance[0]) //set tlm balance
-                        setWax(lastTokenBalance[1]) //set wax balance
-                    }
-                }).catch((err2) => {
-                    console.log("Cannot get account of "+user)
-                    console.log(err2.message)
-                })
-            })
+        .catch((err) => {
+            if(err.response) {
+                console.log(err.response)
+            } else {
+                console.log(err.message)
+            }
+        })
+        await axios.get(`https://api.alienworlds.fun/get_tlm/${user}`)
+        .then((resp) => {
+            if(resp && resp.data) {
+                setBalance(resp.data[0].slice(0, -4))
+            }
+        })
+        .catch((err) => {
+            if(err.response) {
+                console.log(err.response)
+            } else {
+                console.log(err.message)
+            }
         })
     }
 
     const getMinerName = async (user) => {
-        await delay(getRandom(300,5000))
-        const minerName = await axios.post('https://wax.pink.gg/v1/chain/get_table_rows',
-        {json: true, code: "federation", scope: "federation", table: 'players', lower_bound: user, upper_bound: user},
-        {
-            timeout: 5000
-        }
-        ).then(function({status, data}) {
+        await delay(getRandom(100,1500))
+        const tagName = await axios.get(`https://api.alienworlds.fun/get_tag/${user}`)
+        .then(function({status, data}) {
             if(status == 200) {
                 if(data.rows.length < 1) return "NOT_FOUND"
                 return data.rows[0].tag
             } else {
                 throw new Error(`API Error ${status}`)
             }
-        }).catch(async () => {
-            return axios.get(`/api/get_tag/${user}`)
-            .then(function({status, data}) {
-                if(status == 200) {
-                    if(data.rows.length < 1) return "NOT_FOUND"
-                    return data.rows[0].tag
-                } else {
-                    throw new Error(`API Error ${status}`)
-                }
-            }).catch((err) => {
-                console.log("Cannot get name tag of "+user)
+        }).catch((err) => {
+            if(err.response) {
+                console.log(err.response)
+            } else {
                 console.log(err.message)
-                return "Error"
-            })
+            }
+            return "Error"
         })
         //console.log(minerName)
-        if(minerName == "NOT_FOUND") {
+        if(tagName == "NOT_FOUND") {
             alert(`${user} is not alien worlds account, please check your spelling!`)
             onDelete(acc)
         } else {
-            setMinerName(minerName)
+            setMinerName(tagName)
         }
     }
 
     const getLastMineInfo = async (user) => {
-        await delay(getRandom(300,5000))
-        const lastMineData = await axios.post('https://wax.eosn.io/v1/chain/get_table_rows',
-        {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: user, upper_bound: user},
-        {
-            timeout: 5000
-        }
-        ).then(function({data}) {
-            //console.log(data.rows[0]);
+        await delay(getRandom(100,1500))
+        const lastMineData = await axios.get(`https://api.alienworlds.fun/get_lastmine/${user}`)
+        .then(function({data}) {
             if(data.rows.length < 1) return {
                 last_mine: "None",
                 last_mine_tx: "None",
@@ -170,35 +102,16 @@ export default function AccountRow(props) {
                 currentLand: data.rows[0].current_land
             }
         }).catch((err) => {
-            return axios.post('https://api-wax.eosauthority.com/v1/chain/get_table_rows',
-            {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: user, upper_bound: user},
-            {
-                timeout: 5000
+            if(err.response) {
+                console.log(err.response)
+            } else {
+                console.log(err.message)
             }
-            )
-            .then(({data}) => {
-                return {
-                    last_mine: data.rows[0].last_mine,
-                    last_mine_tx: data.rows[0].last_mine_tx,
-                    currentLand: data.rows[0].current_land
-                }
-            }).catch((err) => {
-                return axios.get(`/api/get_last_mine/${user}`)
-                .then(({data}) => {
-                    return {
-                        last_mine: data.rows[0].last_mine,
-                        last_mine_tx: data.rows[0].last_mine_tx,
-                        currentLand: data.rows[0].current_land
-                    }
-                })
-                .catch((err) => {
-                    return {
-                        last_mine: "None",
-                        last_mine_tx: "None",
-                        currentLand: "None"
-                    }
-                })
-            })
+            return {
+                last_mine: "None",
+                last_mine_tx: "None",
+                currentLand: "None"
+            }
         })
         //console.log(lastMineData)
         const lastMineString = lastMineData.last_mine != "None" ? DateTime.fromISO(lastMineData.last_mine+"Z").setZone("local").toRelative() : "Error"
@@ -212,36 +125,20 @@ export default function AccountRow(props) {
     }
 
     const fetchLastMineTx = async (tx) => {
-        await delay(getRandom(300,5000))
+        await delay(getRandom(100,1500))
         if(tx == "None") { return }
-        const lastMineTLM = await axios.get(`https://apiwax.3dkrender.com/v2/history/get_transaction?id=${tx}`,{
-            timeout: 5000
-        }
-        ).then(function({data}) {
-            return data.actions[1].act.data.amount
-        }).catch(async () => {
-            await delay(getRandom(300,5000))
-            return axios.get(`https://wax.greymass.com/v1/history/get_transaction?id=${tx}`,{
-                timeout: 5000
-            })
-            .then(({data}) => data.traces[1].act.data.quantity.slice(0, -4))
-            .catch(async () => {
-                return axios.get(`https://wax.eosrio.io/v2/history/get_transaction?id=${tx}`,{
-                    timeout: 5000
-                })
-                .then(({data}) => data.actions[1].act.data.amount)
-                .catch(async () => {
-                    return axios.get(`/api/get_tx/${tx}`)
-                    .then(({data}) => data.actions[1].act.data.amount)
-                    .catch((err4) => {
-                        console.log("Local fallback error")
-                        console.log(err4.message)
-                        return "ERROR"
-                    })
-                })
-            })
+        const lastMineTLM = await axios.get(`https://api.alienworlds.fun/get_tx/${tx}`)
+        .then(function({data}) {
+            return data.mined
+        }).catch((err) => {
+            if(err.response) {
+                console.log(err.response)
+            } else {
+                console.log(err.message)
+            }
+            return "Error"
         })
-        if(lastMineTLM == 'ERROR') return
+        if(lastMineTLM == 'Error') return
         const newHistory = [...history]
         if(newHistory.length == 5) {
             newHistory.shift() //remove first member
@@ -256,13 +153,9 @@ export default function AccountRow(props) {
     }
 
     const checkNFT = async (user) => {
-        await delay(getRandom(300,5000))
-        await axios.post('https://wax.eosn.io/v1/chain/get_table_rows',
-        {json: true, code: "m.federation", scope: "m.federation", table: 'claims', lower_bound: user, upper_bound: user},
-        {
-            timeout: 15000
-        }
-        ).then(function({status, data}) {
+        await delay(getRandom(100,1500))
+        await axios.get(`https://api.alienworlds.fun/check_nft/${user}`)
+        .then(function({status, data}) {
             if(status == 200) {
                 if(data.rows.length > 0) {
                     return setNft([...data.rows[0].template_ids])
@@ -270,36 +163,13 @@ export default function AccountRow(props) {
             } else {
                 throw new Error(`API Error ${status}`)
             }
-        }).catch(async () => {
-            return axios.post('https://wax.eosphere.io/v1/chain/get_table_rows',
-            {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: user, upper_bound: user},
-            {
-                timeout: 15000
+        }).catch((err) => {
+            console.log("Cannot check NFT")
+            if(err.response) {
+                console.log(err.response)
+            } else {
+                console.log(err.message)
             }
-            )
-            .then(({status, data}) => {
-                if(status == 200) {
-                    if(data.rows.length > 0) {
-                        return setNft([...data.rows[0].template_ids])
-                    }
-                } else {
-                    throw new Error(`API Error ${status}`)
-                }
-            }).catch(async () => {
-                return axios.get(`/api/check_nft/${user}`)
-                .then(({status, data}) => {
-                    if(status == 200) {
-                        if(data.rows.length > 0) {
-                            return setNft([...data.rows[0].template_ids])
-                        }
-                    } else {
-                        throw new Error(`API Error ${status}`)
-                    }
-                }).catch((err) => {
-                    console.log("Cannot check NFTs")
-                    console.log(err.message)
-                })
-            })
         })
     }
 
@@ -315,7 +185,7 @@ export default function AccountRow(props) {
         if(loading) {
             //console.log("Checking... "+acc)
             await fetchAccountData(acc)
-            await delay(getRandom(100,3000))
+            await delay(getRandom(100,1500))
             await getLastMineInfo(acc)
             await checkNFT(acc)
             setLoading(false)
@@ -342,7 +212,7 @@ export default function AccountRow(props) {
         const interval = setInterval(async () => {
             //console.log("It's time to checking!")
             setLoading(true)
-        }, 90000);
+        }, 120000);
         return () => clearInterval(interval);
     }, []);
 
@@ -396,7 +266,7 @@ export default function AccountRow(props) {
                 <td className="text-xs">{update}</td>
                 <td>
                 <a 
-                class="inline-flex items-center h-8 px-4 m-2 text-sm text-white font-bold transition-colors 
+                className="inline-flex items-center h-8 px-4 m-2 text-sm text-white font-bold transition-colors 
                 duration-150 bg-green-600 rounded-lg focus:shadow-outline hover:bg-green-800" 
                 href={'https://wax.atomichub.io/explorer/account/'+acc}
                 rel="noopener noreferrer" target="_blank">NFT</a>

@@ -132,10 +132,13 @@ export default function Home(props) {
 
       <main className="flex flex-col w-full lg:w-3/6">
         <div className="flex flex-col">
-          <span className="text-5xl font-bold mb-3 text-center">Alienworlds Account Monitor <span className="text-md text-blue-400">v2.4</span></span>
+          <span className="text-5xl font-bold mb-3 text-center">Alienworlds Account Monitor <span className="text-md text-blue-400">v2.5</span></span>
           <div className="mx-2 px-2 font-bold text-green-600 bg-green-200 rounded-md text-center w-auto self-center">
-            <span className="text-center text-sm">Like this website? You can donate us by sending WAX to 1crtk.wam</span>
+            <span className="text-center text-sm">Like this website? You can donate us by sending WAX to 1crtk.wam</span><br/>
+            <span className="text-center text-xs">This website costs $20/mo to running all services.</span><br/>
+            <span className="text-center text-xs">All donations will use to maintain this website.</span>
           </div>
+          
           <span className="text-center text-sm mt-2">This website is open source on <a className="text-blue-400" href="https://github.com/VectorXz/alienworlds_acc_monitor">GitHub</a></span>
         </div>
 
@@ -162,6 +165,9 @@ export default function Home(props) {
           </div>
           <div className="flex-1 flex-col w-full">
             <div className="flex w-full items-center justify-center">
+              <span className="text-sm font-bold">Like us on Facebook to follow any updates, issues.</span>
+            </div>
+            <div className="flex w-full items-center justify-center mt-0.5">
               <iframe
               src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FAlienworldsfun-100734315569585&tabs&width=340&height=130&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId"
               width={340}
@@ -216,9 +222,9 @@ hover:bg-blue-200 py-1 px-3 font-bold ${layout==='Table' ? 'bg-blue-500 text-whi
         <div className="flex flex-col items-center">
           <h1 className="text-3xl font-bold">Loaded {account.length} accounts</h1>
           <div className="grid grid-cols-2 lg:grid-cols-6 gap-5 mt-3">
-            {account.map((acc) => {
+            {account.map((acc, i) => {
               return (
-                <div className="p-3 px-5 text-center bg-gray-600 rounded-md">
+                <div key={i} className="p-3 px-5 text-center bg-gray-600 rounded-md">
                   <h1>{acc}</h1>
                 </div>
               )
@@ -230,7 +236,7 @@ hover:bg-blue-200 py-1 px-3 font-bold ${layout==='Table' ? 'bg-blue-500 text-whi
         <TotalBalanceCard totalTLM={totalTLM} totalWax={totalWax} totalStaked={totalStaked}
         TLMPrice={TLMPrice} WAXPrice={WAXPrice} />
         <div className="flex flex-col rounded-md items-center justify-center p-6 my-3 w-full lg:w-5/6 bg-gray-700">
-          <span className="text-lg font-bold text-center my-1 text-indigo-300">Data will automatically refresh every 90 secs</span>
+          <span className="text-lg font-bold text-center my-1 text-indigo-300">Data will automatically refresh every 120 secs</span>
           <span className="text-lg font-bold text-center my-1 text-indigo-300">Click at trash icon to delete account</span>
           <AccountCard accounts={account}
           onDelete={handleDeleteAcc}
@@ -244,7 +250,7 @@ hover:bg-blue-200 py-1 px-3 font-bold ${layout==='Table' ? 'bg-blue-500 text-whi
         <TotalBalanceCard totalTLM={totalTLM} totalWax={totalWax} totalStaked={totalStaked}
           TLMPrice={TLMPrice} WAXPrice={WAXPrice} />
         <div className="flex flex-col rounded-md items-center justify-center p-6 my-3 w-full lg:w-5/6 bg-gray-700">
-          <span className="text-lg font-bold text-center my-1 text-indigo-300">Data will automatically refresh every 90 secs</span>
+          <span className="text-lg font-bold text-center my-1 text-indigo-300">Data will automatically refresh every 120 secs</span>
           <span className="text-lg font-bold text-center my-1 text-indigo-300">Click at trash icon to delete account</span>
           <span className="visible xl:invisible">If you're using mobile, you may need to scroll along the table.</span>
           <AccountTable accounts={account}
