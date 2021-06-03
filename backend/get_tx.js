@@ -60,7 +60,7 @@ router.get('/:tx', async (req, res) => {
         let indexv2 = getRandom(0, v2_api.length)
         const urlv2 = `${v2_api[indexv2]}/v2/history/get_transaction?id=${tx}`
         console.log(urlv2)
-        await axios.get(urlv2, {}, {
+        await axios.get(urlv2, {
             headers: {
                 timeout: 10000
             }
