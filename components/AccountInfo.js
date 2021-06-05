@@ -84,7 +84,7 @@ export default function AccountInfo(props) {
             }
         }
         if(!result) {
-            await axios.get(`http://localhost:3003/get_tlm/${user}`)
+            await axios.get(`https://api.alienworlds.fun/get_tlm/${user}`)
             .then((resp) => {
                 if(resp && resp.data) {
                     result = resp.data
@@ -129,7 +129,7 @@ export default function AccountInfo(props) {
             }
         }
         if(!result) {
-            await axios.get(`http://localhost:3003/get_account/${user}`)
+            await axios.get(`https://api.alienworlds.fun/get_account/${user}`)
             .then((resp) => {
                 if(resp && resp.data) {
                     result = resp.data
@@ -183,7 +183,7 @@ export default function AccountInfo(props) {
             }
         }
         if(!result) {
-            await axios.get(`http://localhost:3003/get_tag/${user}`)
+            await axios.get(`https://api.alienworlds.fun/get_tag/${user}`)
             .then((resp) => {
                 if(resp && resp.data) {
                     result = resp.data
@@ -232,7 +232,7 @@ export default function AccountInfo(props) {
             }
         }
         if(!result) {
-            await axios.get(`http://localhost:3003/get_lastmine/${user}`)
+            await axios.get(`https://api.alienworlds.fun/get_lastmine/${user}`)
             .then((resp) => {
                 if(resp && resp.data) {
                     result = resp.data
@@ -316,7 +316,7 @@ export default function AccountInfo(props) {
             }
         }
         if(!result) {
-            await axios.get(`http://localhost:3003/get_tx/${user}`)
+            await axios.get(`https://api.alienworlds.fun/get_tx/${user}`)
             .then((resp) => {
                 if(resp && resp.data) {
                     result = resp.data
@@ -370,7 +370,7 @@ export default function AccountInfo(props) {
             }
         }
         if(!result) {
-            await axios.get(`http://localhost:3003/check_nft/${user}`)
+            await axios.get(`https://api.alienworlds.fun/check_nft/${user}`)
             .then((resp) => {
                 if(resp && resp.data) {
                     result = resp.data
