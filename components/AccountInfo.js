@@ -2,6 +2,38 @@ import { useState, useEffect, useRef } from 'react'
 const { DateTime } = require("luxon");
 import delay from 'delay'
 
+const v1 = [
+    'https://wax.pink.gg',
+    'https://wax.cryptolions.io',
+    'https://wax.dapplica.io',
+    'https://api.wax.liquidstudios.io',
+    'https://wax.eosn.io',
+    'https://api.wax.alohaeos.com',
+    'https://wax.greymass.com',
+    'https://wax-bp.wizardsguild.one',
+    'https://apiwax.3dkrender.com',
+    'https://wax.eu.eosamsterdam.net',
+    'https://wax.csx.io',
+    'https://wax.eoseoul.io',
+    'https://wax.eosphere.io',
+    'https://api.waxeastern.cn'
+]
+
+const tx_api = [
+    'https://wax.greymass.com',
+    'https://wax.cryptolions.io',
+    'https://api.wax.alohaeos.com',
+    'https://wax.blacklusion.io',
+    'https://waxapi.ledgerwise.io',
+]
+
+const tx_api_v2 = [
+    'https://api.wax.alohaeos.com',
+    'https://wax.eu.eosamsterdam.net',
+    'https://api.waxsweden.org',
+    'https://wax.cryptolions.io'
+]
+
 export default function AccountInfo(props) {
     const { index, account, axios, onDelete, onTLMChange, onWaxChange, onStakedChange } = props
 
@@ -25,151 +57,341 @@ export default function AccountInfo(props) {
         return Math.floor(Math.random() * (max - min) + min);
     }
 
-    const fetchAccountData = async (user) => {
-        await axios.get(`https://api.alienworlds.fun/get_account/${user}`)
-        .then((resp) => {
-            if(resp && resp.data) {
-                const newCpuState = {
-                    ...resp.data.cpu_limit,
-                    cpu_weight: resp.data.total_resources.cpu_weight
+    const fetchTLM = async (user) => {
+        let api_index = getRandom(0, v1.length)
+        let tries = 0
+        let result = null
+        while(tries < 3) {
+            console.log("TRY ",tries)
+            await axios.post(`${v1[api_index%v1.length]}/v1/chain/get_currency_balance`,
+            {
+                "code": "alien.worlds",
+                "account": user,
+                "symbol": "TLM"
+            })
+            .then((resp) => {
+                if(resp && resp.data) {
+                    result = resp.data
                 }
-                setAccInfo(newCpuState)
-                setWax(resp.data.core_liquid_balance.slice(0, -4))
+            })
+            .catch((err) => {
+                console.log(err)
+                tries++
+                api_index++
+            })
+            if(result != null) {
+                break;
             }
-        })
-        .catch((err) => {
-            if(err.response) {
-                console.log(err.response)
+        }
+        if(!result) {
+            await axios.get(`http://localhost:3003/get_tlm/${user}`)
+            .then((resp) => {
+                if(resp && resp.data) {
+                    result = resp.data
+                }
+            })
+            .catch((err) => {
+                if(err.response) {
+                    console.log(err.response)
+                } else {
+                    console.log(err.message)
+                }
+            })
+        }
+        if(result && result.length > 0) {
+            //console.log(result)
+            setBalance(result[0].slice(0, -4))
+        }
+    }
+
+    const fetchAccountData = async (user) => {
+        let api_index = getRandom(0, v1.length)
+        let tries = 0
+        let result = null
+        while(tries < 3) {
+            console.log("TRY ",tries)
+            await axios.post(`${v1[api_index%v1.length]}/v1/chain/get_account`,
+            {
+                "account_name": user
+            })
+            .then((resp) => {
+                if(resp && resp.data) {
+                    result = resp.data
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+                tries++
+                api_index++
+            })
+            if(result != null) {
+                break;
+            }
+        }
+        if(!result) {
+            await axios.get(`http://localhost:3003/get_account/${user}`)
+            .then((resp) => {
+                if(resp && resp.data) {
+                    result = resp.data
+                }
+            })
+            .catch((err) => {
+                if(err.response) {
+                    console.log(err.response)
+                } else {
+                    console.log(err.message)
+                }
+            })
+        }
+        if(result) {
+            console.log("Setting data")
+            console.log(result)
+            const newCpuState = {
+                ...result.cpu_limit,
+                cpu_weight: result.total_resources.cpu_weight
+            }
+            setAccInfo(newCpuState)
+            console.log(result.core_liquid_balance)
+            if(result.core_liquid_balance) {
+                setWax(result.core_liquid_balance.slice(0, -4))
             } else {
-                console.log(err.message)
+                setWax("N/A")
             }
-        })
-        await axios.get(`https://api.alienworlds.fun/get_tlm/${user}`)
-        .then((resp) => {
-            if(resp && resp.data) {
-                setBalance(resp.data[0].slice(0, -4))
-            }
-        })
-        .catch((err) => {
-            if(err.response) {
-                console.log(err.response)
-            } else {
-                console.log(err.message)
-            }
-        })
+        }
     }
 
     const getMinerName = async (user) => {
-        await delay(getRandom(100,1500))
-        const tagName = await axios.get(`https://api.alienworlds.fun/get_tag/${user}`)
-        .then(function({status, data}) {
-            if(status == 200) {
-                if(data.rows.length < 1) return "NOT_FOUND"
-                return data.rows[0].tag
-            } else {
-                throw new Error(`API Error ${status}`)
+        let api_index = getRandom(0, v1.length)
+        let tries = 0
+        let result = null
+        while(tries < 3) {
+            console.log("TRY ",tries)
+            await axios.post(`${v1[api_index%v1.length]}/v1/chain/get_table_rows`,
+            {json: true, code: "federation", scope: "federation", table: 'players', lower_bound: user, upper_bound: user})
+            .then((resp) => {
+                if(resp && resp.data) {
+                    result = resp.data
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+                tries++
+                api_index++
+            })
+            if(result != null) {
+                break;
             }
-        }).catch((err) => {
-            if(err.response) {
-                console.log(err.response)
-            } else {
-                console.log(err.message)
-            }
-            return "Error"
-        })
-        //console.log(minerName)
-        if(tagName == "NOT_FOUND") {
+        }
+        if(!result) {
+            await axios.get(`http://localhost:3003/get_tag/${user}`)
+            .then((resp) => {
+                if(resp && resp.data) {
+                    result = resp.data
+                }
+            })
+            .catch((err) => {
+                if(err.response) {
+                    console.log(err.response)
+                } else {
+                    console.log(err.message)
+                }
+            })
+        }
+        if(result.rows.length < 1) {
             alert(`${user} is not alien worlds account, please check your spelling!`)
             onDelete(acc)
-        } else {
-            setMinerName(tagName)
+            return
+        }
+        if(result) {
+            console.log("Setting Tag data")
+            console.log(result)
+            setMinerName(result.rows[0].tag)
         }
     }
 
     const getLastMineInfo = async (user) => {
-        await delay(getRandom(100,1500))
-        const lastMineData = await axios.get(`https://api.alienworlds.fun/get_lastmine/${user}`)
-        .then(function({data}) {
-            if(data.rows.length < 1) return {
-                last_mine: "None",
-                last_mine_tx: "None",
-                currentLand: "None"
-            }
-            return {
-                last_mine: data.rows[0].last_mine,
-                last_mine_tx: data.rows[0].last_mine_tx,
-                currentLand: data.rows[0].current_land
-            }
-        }).catch((err) => {
-            if(err.response) {
-                console.log(err.response)
-            } else {
-                console.log(err.message)
-            }
-            return {
-                last_mine: "None",
-                last_mine_tx: "None",
-                currentLand: "None"
-            }
-        })
-        //console.log(lastMineData)
-        const lastMineString = lastMineData.last_mine != "None" ? DateTime.fromISO(lastMineData.last_mine+"Z").setZone("local").toRelative() : "Error"
-        //console.log("Last mine: "+lastMineString)
-        const newLastMine = {
-            last_mine: lastMineString,
-            last_mine_tx: lastMineData.last_mine_tx,
-            currentLand: lastMineData.currentLand
-        }
-        setLastMine(newLastMine)
-    }
-
-    const fetchLastMineTx = async (tx) => {
-        await delay(getRandom(100,1500))
-        if(tx == "None") { return }
-        const lastMineTLM = await axios.get(`https://api.alienworlds.fun/get_tx/${tx}`)
-        .then(function({data}) {
-            return data.mined
-        }).catch((err) => {
-            if(err.response) {
-                console.log(err.response)
-            } else {
-                console.log(err.message)
-            }
-            return "Error"
-        })
-        if(lastMineTLM == 'Error') return
-        const newHistory = [...history]
-        if(newHistory.length == 5) {
-            newHistory.shift() //remove first member
-        }
-        if(history.length === 0 || history.pop().tx !== tx) {
-            newHistory.push({
-                tx: tx,
-                amount: lastMineTLM+" TLM"
+        let api_index = getRandom(0, v1.length)
+        let tries = 0
+        let result = null
+        while(tries < 3) {
+            console.log("TRY ",tries)
+            await axios.post(`${v1[api_index%v1.length]}/v1/chain/get_table_rows`,
+            {json: true, code: "m.federation", scope: "m.federation", table: 'miners', lower_bound: user, upper_bound: user})
+            .then((resp) => {
+                if(resp && resp.data) {
+                    result = resp.data
+                }
             })
-            setHistory(newHistory)
+            .catch((err) => {
+                console.log(err)
+                tries++
+                api_index++
+            })
+            if(result != null) {
+                break;
+            }
+        }
+        if(!result) {
+            await axios.get(`http://localhost:3003/get_lastmine/${user}`)
+            .then((resp) => {
+                if(resp && resp.data) {
+                    result = resp.data
+                }
+            })
+            .catch((err) => {
+                if(err.response) {
+                    console.log(err.response)
+                } else {
+                    console.log(err.message)
+                }
+            })
+        }
+        if(result.rows.length < 1) {
+            return
+        }
+        if(result) {
+            console.log("Setting Lastmine data")
+            console.log(result)
+            const lastMineString = result.rows[0].last_mine != "None" ? DateTime.fromISO(result.rows[0].last_mine+"Z").setZone("local").toRelative() : "Error"
+            const newLastMine = {
+                last_mine: lastMineString,
+                last_mine_tx: result.rows[0].last_mine_tx,
+                currentLand: result.rows[0].current_land
+            }
+            setLastMine(newLastMine)
+        }
+    }
+    
+    const fetchLastMineTx = async (tx) => {
+        let api_index = getRandom(0, tx_api.length)
+        let tries = 0
+        let result = null
+        while(tries < 3) {
+            console.log("TRY ",tries)
+            await axios.post(`${tx_api[api_index%tx_api.length]}/v1/history/get_transaction`,
+            {
+                id: tx
+            })
+            .then((resp) => {
+                if(resp && resp.data) {
+                    //console.log(resp.data)
+                    if(tx_api[api_index%tx_api.length]=='https://wax.greymass.com/v1/history/get_transaction') {
+                        result = {
+                            mined: parseFloat(resp.data.traces[1].act.data.quantity.slice(0, -4))
+                        }
+                    } else {
+                        result = { mined: resp.data.traces[1].act.data.amount }
+                    }
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+                tries++
+                api_index++
+            })
+            if(result != null) {
+                break;
+            }
+        }
+        if(!result) {
+            // Try v2
+            tries = 0
+            api_index = getRandom(0, tx_api_v2.length)
+            while(tries < 3) {
+                console.log("TRY ",tries)
+                await axios.get(`${tx_api_v2[api_index%tx_api_v2.length]}/v2/history/get_transaction?id=${tx}`)
+                .then((resp) => {
+                    if(resp && resp.data) {
+                        result = { mined: resp.data.actions[1].act.data.amount }
+                    }
+                })
+                .catch((err) => {
+                    console.log(err)
+                    tries++
+                    api_index++
+                })
+                if(result != null) {
+                    break;
+                }
+            }
+        }
+        if(!result) {
+            await axios.get(`http://localhost:3003/get_tx/${user}`)
+            .then((resp) => {
+                if(resp && resp.data) {
+                    result = resp.data
+                }
+            })
+            .catch((err) => {
+                if(err.response) {
+                    console.log(err.response)
+                } else {
+                    console.log(err.message)
+                }
+            })
+        }
+        if(result && result.mined) {
+            console.log("Setting TX data")
+            console.log(result)
+            const newHistory = [...history]
+            if(newHistory.length == 5) {
+                newHistory.shift() //remove first member
+            }
+            if(history.length === 0 || history.pop().tx !== tx) {
+                newHistory.push({
+                    tx: tx,
+                    amount: result.mined+" TLM"
+                })
+                setHistory(newHistory)
+            }
         }
     }
 
     const checkNFT = async (user) => {
-        await delay(getRandom(100,1500))
-        await axios.get(`https://api.alienworlds.fun/check_nft/${user}`)
-        .then(function({status, data}) {
-            if(status == 200) {
-                if(data.rows.length > 0) {
-                    return setNft([...data.rows[0].template_ids])
+        let api_index = getRandom(0, v1.length)
+        let tries = 0
+        let result = null
+        while(tries < 3) {
+            console.log("TRY ",tries)
+            await axios.post(`${v1[api_index%v1.length]}/v1/chain/get_table_rows`,
+            {json: true, code: "m.federation", scope: "m.federation", table: 'claims', lower_bound: user, upper_bound: user})
+            .then((resp) => {
+                if(resp && resp.data) {
+                    result = resp.data
                 }
-            } else {
-                throw new Error(`API Error ${status}`)
+            })
+            .catch((err) => {
+                console.log(err)
+                tries++
+                api_index++
+            })
+            if(result != null) {
+                break;
             }
-        }).catch((err) => {
-            console.log("Cannot check NFT")
-            if(err.response) {
-                console.log(err.response)
-            } else {
-                console.log(err.message)
-            }
-        })
+        }
+        if(!result) {
+            await axios.get(`http://localhost:3003/check_nft/${user}`)
+            .then((resp) => {
+                if(resp && resp.data) {
+                    result = resp.data
+                }
+            })
+            .catch((err) => {
+                if(err.response) {
+                    console.log(err.response)
+                } else {
+                    console.log(err.message)
+                }
+            })
+        }
+        if(result.rows.length < 1) {
+            return
+        }
+        if(result) {
+            console.log("Setting NFT data")
+            console.log(result)
+            setNft([...result.rows[0].template_ids])
+        }
     }
 
     useEffect(async () => {
@@ -184,7 +406,8 @@ export default function AccountInfo(props) {
         if(loading) {
             //console.log("Checking... "+acc)
             await fetchAccountData(acc)
-            await delay(getRandom(100,3000))
+            await fetchTLM(acc)
+            await delay(getRandom(100,1500))
             await getLastMineInfo(acc)
             await checkNFT(acc)
             setLoading(false)
