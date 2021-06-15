@@ -385,6 +385,7 @@ export default function AccountInfo(props) {
             })
         }
         if(result.rows.length < 1) {
+            setNft([])
             return
         }
         if(result) {
