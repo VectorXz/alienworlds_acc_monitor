@@ -43,7 +43,7 @@ export default function AccountCard(props) {
         if(TLM.length > 0) {
             const totalBal = TLM.reduce((total, cur) => {
                 //console.log(total, cur)
-                if(cur == "Loading") {
+                if(cur == "Loading" || cur == 'N/A') {
                     return total
                 }
                 return total + parseFloat(cur)
@@ -62,7 +62,7 @@ export default function AccountCard(props) {
     useEffect(() => {
         if(wax.length > 0) {
             const totalWax = wax.reduce((total,now) => {
-                if(now == 'Loading') {
+                if(now == 'Loading' || now == 'N/A') {
                     return total
                 }
                 return total + parseFloat(now)
