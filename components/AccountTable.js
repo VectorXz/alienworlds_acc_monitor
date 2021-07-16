@@ -67,7 +67,7 @@ export default function AccountTable(props) {
         //console.log(wax)
         if(wax.length > 0) {
             const totalWax = wax.reduce((total,now) => {
-                if(now == 'Loading' || cur == 'N/A') {
+                if(now == 'Loading' || now == 'N/A') {
                     return total
                 }
                 return total + parseFloat(now)
