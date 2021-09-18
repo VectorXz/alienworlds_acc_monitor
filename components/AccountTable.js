@@ -106,7 +106,7 @@ export default function AccountTable(props) {
 
     return (
         <div className="flex flex-col w-full overflow-auto">
-            <table className="table-auto border border-gray-500 border-collapse mt-5">
+            <table className="table-sort table-auto border border-gray-500 border-collapse mt-5">
                 <thead>
                     <tr className="bg-gray-800">
                         <th className="w-min">Remove</th>
